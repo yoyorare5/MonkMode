@@ -1,0 +1,6 @@
+[build]
+  command = "npm --prefix monk-mode-app run build"
+  publish = "monk-mode-app/dist"
+
+[build.environment]
+  NODE_VERSION = "22"
