@@ -1,1205 +1,159 @@
-import React, { useEffect, useMemo, useRef, useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import {
-  Check,
-  Lock,
-  Shield,
-  Flame,
   ArrowRight,
+  BellOff,
+  BellRing,
+  BookOpen,
   CalendarDays,
-  Clock3,
-  Target,
-  AlertTriangle,
-  Trophy,
-  XCircle,
+  Check,
+  Flame,
   History,
-  Sparkles,
-  LogOut,
-  User,
-  Mail,
   KeyRound,
-  ChevronRight,
+  Lock,
+  LogOut,
+  Mail,
+  RotateCcw,
   Smartphone,
-  Download,
+  Sparkles,
+  Target,
+  Trophy,
+  User,
+  X,
+  XCircle,
 } from "lucide-react";
-const Button = ({ className = "", children, ...props }) => (
-  <button className={className} {...props}>{children}</button>
-);
 
-const Input = ({ className = "", ...props }) => (
-  <input className={className} {...props} />
-);
-
-const Textarea = ({ className = "", ...props }) => (
-  <textarea className={className} {...props} />
-);
-
-const Progress = ({ value = 0, className = "" }) => (
-  <div className={className}>
-    <div
-      style={{ width: `${value}%` }}
-      className="h-full rounded-full bg-gradient-to-r from-blue-700 via-blue-500 to-cyan-300"
-    />
-  </div>
-);
-
-const Badge = ({ className = "", children, ...props }) => (
-  <div className={`inline-flex items-center rounded-full px-3 py-1 text-xs font-medium ${className}`} {...props}>
-    {children}
-  </div>
-);
-
-const APP_KEY = "monk_mode_prod_v1";
+const APP_KEY = "fasting_mode_prod_v1";
+const LEGACY_APP_KEY = "monk_mode_prod_v1";
 const TZ = "America/New_York";
-const DURATIONS = [21, 30, 60, 90];
-const DEFAULT_STATE = {
-  auth: {
-    user: null,
-    users: [],
-    session: null,
-  },
-  runs: {
-    activeRun: null,
-    history: [],
-  },
-  ui: {
-    installedPromptDismissed: false,
-  },
-};
+const DURATIONS = [7, 14, 21, 30, 40];
+const DEFAULT_RULES = [
+  "Pray before the day begins",
+  "Read Scripture with attention",
+  "Keep the fasting window",
+  "No lust, porn, or compromise",
+  "Train the body with discipline",
+  "Close the night in gratitude",
+];
+const FASTING_TYPES = [
+  { id: "sunrise", label: "Sunrise fast", title: "Sunrise to sundown", description: "Food is laid aside through the day for prayer, Scripture, and watchfulness." },
+  { id: "daniel", label: "Daniel focus", title: "Daniel focus", description: "Simple food, sober appetite, and a clear heart before the Lord." },
+  { id: "media", label: "Media fast", title: "Media abstinence", description: "Remove noise, entertainment, and distraction so prayer can become primary." },
+  { id: "custom", label: "Custom fast", title: "Custom consecration", description: "Define a fast with your pastor, conscience, and health in view." },
+];
+const SCRIPTURES = [
+  { reference: "Matthew 6:17-18", text: "When you fast, anoint your head and wash your face, that your fasting may not be seen by others but by your Father.", prompt: "Practice secrecy today. Let the Father see what no one else needs to applaud." },
+  { reference: "Joel 2:12", text: "Return to me with all your heart, with fasting, with weeping, and with mourning.", prompt: "Return with your whole heart. Do not treat the fast as performance." },
+  { reference: "Matthew 4:4", text: "Man shall not live by bread alone, but by every word that comes from the mouth of God.", prompt: "When hunger speaks, answer with the Word." },
+  { reference: "Isaiah 58:6", text: "Is not this the fast that I choose: to loose the bonds of wickedness?", prompt: "Ask the Lord to expose what must be broken, healed, or surrendered." },
+  { reference: "Galatians 5:16", text: "Walk by the Spirit, and you will not gratify the desires of the flesh.", prompt: "Make obedience concrete before appetite starts negotiating." },
+];
+const EXAMPLES = ["Prayer before checking phone", "Honor the fasting window", "Read Scripture with attention", "No lust or compromise", "Serve someone quietly", "End the day with examen"];
+const DEFAULT_STATE = { auth: { user: null, users: [], session: null }, runs: { activeRun: null, history: [] }, ui: { installedPromptDismissed: false, soundEnabled: true } };
 
-function cn(...classes) {
-  return classes.filter(Boolean).join(" ");
-}
-
-function deepClone(value) {
-  return JSON.parse(JSON.stringify(value));
-}
-
-function safeStorageLoad() {
-  if (typeof window === "undefined") return deepClone(DEFAULT_STATE);
-  try {
-    const raw = localStorage.getItem(APP_KEY);
-    if (!raw) return deepClone(DEFAULT_STATE);
-    const parsed = JSON.parse(raw);
-    return {
-      auth: { ...DEFAULT_STATE.auth, ...(parsed.auth || {}) },
-      runs: { ...DEFAULT_STATE.runs, ...(parsed.runs || {}) },
-      ui: { ...DEFAULT_STATE.ui, ...(parsed.ui || {}) },
-    };
-  } catch {
-    return deepClone(DEFAULT_STATE);
-  }
-}
-
-function safeStorageSave(state) {
-  if (typeof window === "undefined") return;
-  localStorage.setItem(APP_KEY, JSON.stringify(state));
-}
-
+function cn(...classes) { return classes.filter(Boolean).join(" "); }
+function clone(value) { return JSON.parse(JSON.stringify(value)); }
+function newId() { return typeof crypto !== "undefined" && crypto.randomUUID ? crypto.randomUUID() : `id_${Date.now()}_${Math.random().toString(16).slice(2)}`; }
+function selectedFast(id) { return FASTING_TYPES.find((type) => type.id === id) || FASTING_TYPES[0]; }
+function vibrate(pattern = [12]) { if (typeof navigator !== "undefined" && navigator.vibrate) navigator.vibrate(pattern); }
+function maskEmail(email) { if (!email) return ""; const [name, domain] = email.split("@"); return domain ? `${name.slice(0, 2)}${"*".repeat(Math.max(2, name.length - 2))}@${domain}` : email; }
 function getNYParts(date = new Date()) {
-  const parts = new Intl.DateTimeFormat("en-CA", {
-    timeZone: TZ,
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    second: "2-digit",
-    hour12: false,
-  }).formatToParts(date);
-
+  const parts = new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", second: "2-digit", hour12: false }).formatToParts(date);
   const map = {};
-  parts.forEach((p) => {
-    if (p.type !== "literal") map[p.type] = p.value;
-  });
-
-  return {
-    year: Number(map.year),
-    month: Number(map.month),
-    day: Number(map.day),
-    hour: Number(map.hour),
-    minute: Number(map.minute),
-    second: Number(map.second),
-    dateKey: `${map.year}-${map.month}-${map.day}`,
-  };
+  parts.forEach((part) => { if (part.type !== "literal") map[part.type] = part.value; });
+  return { hour: Number(map.hour), minute: Number(map.minute), second: Number(map.second), dateKey: `${map.year}-${map.month}-${map.day}` };
 }
-
-function getSecondsRemainingInNYDay(now = new Date()) {
-  const p = getNYParts(now);
-  const elapsed = p.hour * 3600 + p.minute * 60 + p.second;
-  return Math.max(0, 86400 - elapsed);
+function secondsLeftToday() { const p = getNYParts(); return Math.max(0, 86400 - (p.hour * 3600 + p.minute * 60 + p.second)); }
+function formatCountdown(seconds) { const h = Math.floor(seconds / 3600); const m = Math.floor((seconds % 3600) / 60); const s = Math.floor(seconds % 60); return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":"); }
+function addDays(dateKey, amount) { const [y, m, d] = dateKey.split("-").map(Number); const date = new Date(Date.UTC(y, m - 1, d)); date.setUTCDate(date.getUTCDate() + amount); return `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, "0")}-${String(date.getUTCDate()).padStart(2, "0")}`; }
+function normalizeRules(rules = []) { const labels = rules.length ? rules.map((rule) => (typeof rule === "string" ? rule : rule.label)) : DEFAULT_RULES; return labels.slice(0, 6).map((label, index) => ({ id: rules[index]?.id || newId(), label: String(label || DEFAULT_RULES[index]).trim(), order: index + 1 })); }
+function normalizeRun(run) {
+  if (!run) return null;
+  const startDateKey = run.startDateKey || getNYParts().dateKey;
+  const days = Array.isArray(run.days) && run.days.length ? run.days : [{ dayNumber: 1, dateKey: startDateKey, status: "pending", completedRuleIds: [], wonAt: null, failedAt: null }];
+  return { ...run, duration: Number(run.duration) || 21, mission: run.mission || "", fastingType: run.fastingType || run.focus || "sunrise", rules: normalizeRules(run.rules), days: days.map((day) => ({ dayNumber: Number(day.dayNumber) || 1, dateKey: day.dateKey || startDateKey, status: day.status || "pending", completedRuleIds: Array.isArray(day.completedRuleIds) ? day.completedRuleIds : [], wonAt: day.wonAt || null, failedAt: day.failedAt || null })), status: run.status || "active", currentDay: Number(run.currentDay) || 1, startDateKey, securedAnimationSeenFor: run.securedAnimationSeenFor || null, failedDay: run.failedDay || null };
 }
-
-function formatCountdown(seconds) {
-  const h = Math.floor(seconds / 3600);
-  const m = Math.floor((seconds % 3600) / 60);
-  const s = Math.floor(seconds % 60);
-  return [h, m, s].map((n) => String(n).padStart(2, "0")).join(":");
-}
-
-function addDaysToDateKey(dateKey, daysToAdd) {
-  const [y, m, d] = dateKey.split("-").map(Number);
-  const dt = new Date(Date.UTC(y, m - 1, d));
-  dt.setUTCDate(dt.getUTCDate() + daysToAdd);
-  const yy = dt.getUTCFullYear();
-  const mm = String(dt.getUTCMonth() + 1).padStart(2, "0");
-  const dd = String(dt.getUTCDate()).padStart(2, "0");
-  return `${yy}-${mm}-${dd}`;
-}
-
-function createRun({ duration, rules, mission }) {
-  const now = new Date();
-  const dateKey = getNYParts(now).dateKey;
-  return {
-    id: crypto.randomUUID(),
-    duration,
-    mission,
-    rules: rules.map((label, idx) => ({ id: crypto.randomUUID(), label, order: idx + 1 })),
-    status: "active",
-    timezone: TZ,
-    startedAt: now.toISOString(),
-    startDateKey: dateKey,
-    currentDay: 1,
-    days: [
-      {
-        dayNumber: 1,
-        dateKey,
-        status: "pending",
-        completedRuleIds: [],
-        wonAt: null,
-        failedAt: null,
-      },
-    ],
-    securedAnimationSeenFor: null,
-    failedDay: null,
-    completedAt: null,
-    failedAt: null,
-  };
-}
-
-function getCurrentDayRecord(run) {
-  return run?.days?.find((d) => d.dayNumber === run.currentDay) || null;
-}
-
-function finalizeRunIfNeeded(runs) {
-  if (!runs.activeRun) return runs;
-  if (runs.activeRun.status === "failed" || runs.activeRun.status === "completed") {
-    return {
-      activeRun: null,
-      history: [runs.activeRun, ...runs.history],
-    };
-  }
-  return runs;
-}
-
+function normalizeState(raw) { const state = raw || {}; return { auth: { ...DEFAULT_STATE.auth, ...(state.auth || {}), users: Array.isArray(state.auth?.users) ? state.auth.users : [] }, runs: { activeRun: normalizeRun(state.runs?.activeRun), history: Array.isArray(state.runs?.history) ? state.runs.history.map(normalizeRun).filter(Boolean) : [] }, ui: { ...DEFAULT_STATE.ui, ...(state.ui || {}), soundEnabled: state.ui?.soundEnabled !== false } }; }
+function loadState() { if (typeof window === "undefined") return clone(DEFAULT_STATE); try { const fresh = localStorage.getItem(APP_KEY); if (fresh) return normalizeState(JSON.parse(fresh)); const legacy = localStorage.getItem(LEGACY_APP_KEY); if (legacy) return normalizeState(JSON.parse(legacy)); } catch { return clone(DEFAULT_STATE); } return clone(DEFAULT_STATE); }
+function saveState(state) { if (typeof window !== "undefined") localStorage.setItem(APP_KEY, JSON.stringify(state)); }
+function currentDay(run) { return run?.days?.find((day) => day.dayNumber === run.currentDay) || null; }
+function wonDays(run) { return run?.days?.filter((day) => day.status === "won").length || 0; }
+function scriptureFor(run) { return SCRIPTURES[((run?.currentDay || 1) - 1) % SCRIPTURES.length]; }
+function createRun({ duration, rules, mission, fastingType }) { const dateKey = getNYParts().dateKey; return { id: newId(), duration, mission, fastingType, rules: normalizeRules(rules), status: "active", timezone: TZ, startedAt: new Date().toISOString(), startDateKey: dateKey, currentDay: 1, days: [{ dayNumber: 1, dateKey, status: "pending", completedRuleIds: [], wonAt: null, failedAt: null }], securedAnimationSeenFor: null, failedDay: null, completedAt: null, failedAt: null }; }
+function archiveIfDone(runs) { return runs.activeRun && ["failed", "completed"].includes(runs.activeRun.status) ? { activeRun: null, history: [runs.activeRun, ...runs.history] } : runs; }
 function evaluateRun(runs) {
   if (!runs?.activeRun || runs.activeRun.status !== "active") return runs;
-
-  const now = new Date();
-  const todayKey = getNYParts(now).dateKey;
-  const run = { ...runs.activeRun, days: [...runs.activeRun.days] };
-  let currentDay = getCurrentDayRecord(run);
-  if (!currentDay) return runs;
-
-  while (currentDay && currentDay.dateKey < todayKey) {
-    const allDone = currentDay.completedRuleIds.length === 6;
-
-    if (!allDone) {
-      currentDay = { ...currentDay, status: "failed", failedAt: now.toISOString() };
-      run.days = run.days.map((d) => (d.dayNumber === currentDay.dayNumber ? currentDay : d));
-      run.status = "failed";
-      run.failedAt = now.toISOString();
-      run.failedDay = currentDay.dayNumber;
-      return finalizeRunIfNeeded({ activeRun: run, history: runs.history });
-    }
-
-    if (currentDay.status !== "won") {
-      currentDay = { ...currentDay, status: "won", wonAt: currentDay.wonAt || now.toISOString() };
-      run.days = run.days.map((d) => (d.dayNumber === currentDay.dayNumber ? currentDay : d));
-    }
-
-    if (run.currentDay >= run.duration) {
-      run.status = "completed";
-      run.completedAt = now.toISOString();
-      return finalizeRunIfNeeded({ activeRun: run, history: runs.history });
-    }
-
-    run.currentDay += 1;
-    const nextDay = {
-      dayNumber: run.currentDay,
-      dateKey: addDaysToDateKey(run.startDateKey, run.currentDay - 1),
-      status: "pending",
-      completedRuleIds: [],
-      wonAt: null,
-      failedAt: null,
-    };
-    if (!run.days.some((d) => d.dayNumber === nextDay.dayNumber)) {
-      run.days.push(nextDay);
-    }
-    currentDay = getCurrentDayRecord(run);
+  const now = new Date(); const todayKey = getNYParts(now).dateKey; const run = normalizeRun({ ...runs.activeRun, days: [...runs.activeRun.days] }); let day = currentDay(run);
+  while (day && day.dateKey < todayKey) {
+    if (day.completedRuleIds.length !== 6) { day = { ...day, status: "failed", failedAt: now.toISOString() }; run.days = run.days.map((item) => item.dayNumber === day.dayNumber ? day : item); run.status = "failed"; run.failedAt = now.toISOString(); run.failedDay = day.dayNumber; return archiveIfDone({ activeRun: run, history: runs.history }); }
+    if (day.status !== "won") { day = { ...day, status: "won", wonAt: day.wonAt || now.toISOString() }; run.days = run.days.map((item) => item.dayNumber === day.dayNumber ? day : item); }
+    if (run.currentDay >= run.duration) { run.status = "completed"; run.completedAt = now.toISOString(); return archiveIfDone({ activeRun: run, history: runs.history }); }
+    run.currentDay += 1; const next = { dayNumber: run.currentDay, dateKey: addDays(run.startDateKey, run.currentDay - 1), status: "pending", completedRuleIds: [], wonAt: null, failedAt: null }; if (!run.days.some((item) => item.dayNumber === next.dayNumber)) run.days.push(next); day = currentDay(run);
   }
-
-  const current = getCurrentDayRecord(run);
-  if (current?.completedRuleIds.length === 6 && current.status !== "won") {
-    run.days = run.days.map((d) =>
-      d.dayNumber === current.dayNumber ? { ...d, status: "won", wonAt: d.wonAt || now.toISOString() } : d
-    );
-  }
-
+  const open = currentDay(run); if (open?.completedRuleIds.length === 6 && open.status !== "won") run.days = run.days.map((item) => item.dayNumber === open.dayNumber ? { ...item, status: "won", wonAt: item.wonAt || now.toISOString() } : item);
   return { activeRun: run, history: runs.history };
 }
-
-function maskEmail(email) {
-  if (!email) return "";
-  const [name, domain] = email.split("@");
-  if (!domain) return email;
-  return `${name.slice(0, 2)}${"•".repeat(Math.max(2, name.length - 2))}@${domain}`;
+function useAudio(enabled) {
+  const ctxRef = useRef(null);
+  const unlock = useCallback(async () => { if (!enabled || typeof window === "undefined") return null; try { const AudioCtx = window.AudioContext || window.webkitAudioContext; if (!AudioCtx) return null; if (!ctxRef.current) ctxRef.current = new AudioCtx(); if (ctxRef.current.state === "suspended") await ctxRef.current.resume(); return ctxRef.current; } catch { return null; } }, [enabled]);
+  const play = useCallback(async (name) => { const ctx = await unlock(); if (!ctx || !enabled) return; const now = ctx.currentTime; const tones = { check: [[330, 0, .08, .025], [494, .06, .12, .035]], secured: [[247, 0, .16, .025], [370, .1, .2, .035], [554, .22, .26, .03]], failure: [[196, 0, .22, .035], [147, .18, .34, .028]], completion: [[247, 0, .18, .028], [330, .13, .2, .03], [494, .28, .28, .034], [659, .48, .4, .026]] }; (tones[name] || []).forEach(([freq, offset, length, peak]) => { const osc = ctx.createOscillator(); const gain = ctx.createGain(); osc.type = "sine"; osc.frequency.value = freq; gain.gain.setValueAtTime(.0001, now + offset); gain.gain.exponentialRampToValueAtTime(peak, now + offset + .025); gain.gain.exponentialRampToValueAtTime(.0001, now + offset + length); osc.connect(gain); gain.connect(ctx.destination); osc.start(now + offset); osc.stop(now + offset + length + .03); }); }, [enabled, unlock]);
+  return { unlock, play };
 }
 
-function playSecureTone() {
-  if (typeof window === "undefined") return;
-  try {
-    const AudioCtx = window.AudioContext || window.webkitAudioContext;
-    if (!AudioCtx) return;
-    const ctx = new AudioCtx();
-    const now = ctx.currentTime;
-    const notes = [392, 523.25, 659.25];
-    notes.forEach((freq, i) => {
-      const osc = ctx.createOscillator();
-      const gain = ctx.createGain();
-      osc.type = "sine";
-      osc.frequency.value = freq;
-      gain.gain.setValueAtTime(0.0001, now + i * 0.09);
-      gain.gain.exponentialRampToValueAtTime(0.05, now + i * 0.09 + 0.02);
-      gain.gain.exponentialRampToValueAtTime(0.0001, now + i * 0.09 + 0.2);
-      osc.connect(gain);
-      gain.connect(ctx.destination);
-      osc.start(now + i * 0.09);
-      osc.stop(now + i * 0.09 + 0.22);
-    });
-  } catch {}
+function Button({ className = "", children, ...props }) { return <button className={cn("inline-flex min-h-11 items-center justify-center rounded-2xl px-4 py-2 text-sm font-semibold transition active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-50", className)} {...props}>{children}</button>; }
+function Input({ className = "", ...props }) { return <input className={cn("min-h-12 w-full rounded-2xl border border-white/10 bg-white/[0.045] px-4 text-white outline-none placeholder:text-slate-600 focus:border-blue-300/40 focus:bg-white/[0.07]", className)} {...props} />; }
+function Textarea({ className = "", ...props }) { return <textarea className={cn("min-h-28 w-full resize-none rounded-2xl border border-white/10 bg-white/[0.045] px-4 py-3 text-white outline-none placeholder:text-slate-600 focus:border-blue-300/40 focus:bg-white/[0.07]", className)} {...props} />; }
+function Badge({ className = "", children }) { return <span className={cn("inline-flex items-center rounded-full px-3 py-1 text-xs font-semibold", className)}>{children}</span>; }
+function Panel({ children, className = "" }) { return <div className={cn("rounded-[28px] border border-blue-400/15 bg-white/[0.055] shadow-[0_18px_80px_rgba(0,0,0,0.42)] backdrop-blur-xl", className)}>{children}</div>; }
+function Progress({ value, className = "" }) { return <div className={cn("overflow-hidden rounded-full bg-white/6", className)}><div className="h-full rounded-full bg-gradient-to-r from-blue-700 via-blue-400 to-sky-200" style={{ width: `${Math.max(0, Math.min(100, value))}%` }} /></div>; }
+function Brand() { return <div className="flex items-center gap-3"><div className="grid h-10 w-10 place-items-center rounded-2xl border border-blue-300/20 bg-blue-500/10 text-blue-200"><Flame className="h-5 w-5" /></div><div><div className="text-sm font-semibold uppercase tracking-[0.28em] text-blue-200">Fasting Mode</div><div className="text-xs text-slate-500">Consecration clock</div></div></div>; }
+function Shell({ children }) { return <div className="relative min-h-dvh overflow-hidden bg-[#02040a] text-white"><div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_-10%,rgba(37,99,235,0.22),transparent_32%),linear-gradient(to_bottom,#02040a,#050916_48%,#02040a)]" /><div className="relative min-h-dvh px-[max(18px,env(safe-area-inset-left))] pb-[max(24px,env(safe-area-inset-bottom))] pt-[max(18px,env(safe-area-inset-top))]">{children}</div></div>; }
+function TopBar({ user, soundEnabled, onToggleSound, onLogout }) { return <div className="sticky top-0 z-30 -mx-2 mb-4 rounded-b-[28px] border-b border-white/10 bg-[#02040a]/78 px-2 py-3 backdrop-blur-xl sm:static sm:mx-0 sm:border-b-0 sm:bg-transparent sm:px-0"><div className="mx-auto flex max-w-6xl items-center justify-between gap-3"><Brand /><div className="flex items-center gap-2"><button onClick={onToggleSound} className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.045] text-slate-300" aria-label={soundEnabled ? "Turn sound off" : "Turn sound on"}>{soundEnabled ? <BellRing className="h-4 w-4" /> : <BellOff className="h-4 w-4" />}</button>{user ? <button onClick={onLogout} className="grid h-11 w-11 place-items-center rounded-2xl border border-white/10 bg-white/[0.045] text-slate-300" aria-label="Sign out"><LogOut className="h-4 w-4" /></button> : null}</div></div></div>; }
+function SectionTitle({ icon: Icon, title, subtitle }) { return <div className="flex items-start gap-3"><div className="rounded-2xl border border-blue-300/20 bg-blue-500/10 p-3 text-blue-200"><Icon className="h-5 w-5" /></div><div><h2 className="text-lg font-semibold text-white">{title}</h2>{subtitle ? <p className="mt-1 text-sm leading-6 text-slate-400">{subtitle}</p> : null}</div></div>; }
+
+function AuthScreen({ onSignIn, onSignUp, soundEnabled, onToggleSound }) {
+  const [mode, setMode] = useState("signin"); const [name, setName] = useState(""); const [email, setEmail] = useState(""); const [password, setPassword] = useState(""); const [error, setError] = useState("");
+  const submit = () => { setError(""); if (!email.trim() || !password.trim()) return setError("Email and password are required."); if (mode === "signup" && !name.trim()) return setError("Name is required."); const result = mode === "signup" ? onSignUp({ name: name.trim(), email: email.trim().toLowerCase(), password }) : onSignIn({ email: email.trim().toLowerCase(), password }); if (result?.error) setError(result.error); };
+  return <Shell><TopBar soundEnabled={soundEnabled} onToggleSound={onToggleSound} /><main className="mx-auto grid min-h-[calc(100dvh-96px)] max-w-6xl gap-8 py-5 lg:grid-cols-[1.05fr_0.95fr] lg:items-center"><section><Badge className="mb-5 border border-blue-300/20 bg-blue-500/10 text-blue-100">Christ-centered fasting system</Badge><h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">Consecrate the fast. Keep watch before Christ.</h1><p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">Fasting Mode helps you set a sober rule of life for a season of prayer, self-denial, Scripture, and obedience.</p><div className="mt-8 grid gap-3 sm:grid-cols-3">{[["Consecration", "The fast is ordered toward Christ, not self-display."], ["Watchfulness", "A New York daily reset keeps the day accountable."], ["Obedience", "Six commitments stay visible until the day is closed."]].map(([title, text]) => <Panel key={title} className="p-4"><div className="text-sm font-semibold">{title}</div><div className="mt-2 text-sm leading-6 text-slate-400">{text}</div></Panel>)}</div></section><Panel className="p-5 sm:p-6"><div className="mb-6 flex rounded-2xl border border-white/10 bg-white/[0.035] p-1">{[["signin", "Sign in"], ["signup", "Create account"]].map(([value, label]) => <button key={value} onClick={() => setMode(value)} className={cn("min-h-11 flex-1 rounded-xl px-4 text-sm font-semibold", mode === value ? "bg-blue-600 text-white" : "text-slate-400")}>{label}</button>)}</div><div className="space-y-4">{mode === "signup" ? <label className="block"><span className="mb-2 block text-xs uppercase tracking-[0.22em] text-slate-500">Name</span><div className="relative"><User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><Input value={name} onChange={(e) => setName(e.target.value)} className="pl-11" placeholder="Your name" /></div></label> : null}<label className="block"><span className="mb-2 block text-xs uppercase tracking-[0.22em] text-slate-500">Email</span><div className="relative"><Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><Input value={email} onChange={(e) => setEmail(e.target.value)} className="pl-11" placeholder="you@example.com" /></div></label><label className="block"><span className="mb-2 block text-xs uppercase tracking-[0.22em] text-slate-500">Password</span><div className="relative"><KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" /><Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="pl-11" placeholder="Password" /></div></label></div>{error ? <div className="mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div> : null}<Button onClick={submit} className="mt-6 w-full bg-blue-600 text-white hover:bg-blue-500">{mode === "signup" ? "Create account" : "Sign in"}<ArrowRight className="ml-2 h-4 w-4" /></Button><p className="mt-5 rounded-2xl border border-blue-300/15 bg-blue-500/5 p-4 text-sm leading-6 text-slate-400">Local persistence keeps this build lightweight. Treat the password as a device-local gate.</p></Panel></main></Shell>;
 }
-
-function pulseFeedback() {
-  if (typeof navigator !== "undefined" && navigator.vibrate) {
-    navigator.vibrate([18, 26, 18]);
-  }
-}
-
-function GlassOrb({ children, className = "" }) {
-  return (
-    <div
-      className={cn(
-        "rounded-[28px] border border-blue-500/20 bg-white/5 backdrop-blur-xl shadow-[0_0_0_1px_rgba(59,130,246,0.06),0_20px_80px_rgba(2,8,23,0.7)]",
-        className
-      )}
-    >
-      {children}
-    </div>
-  );
-}
-
-function SectionTitle({ icon: Icon, title, subtitle, right }) {
-  return (
-    <div className="flex items-start justify-between gap-4">
-      <div className="flex items-start gap-3">
-        <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 text-blue-300">
-          <Icon className="h-5 w-5" />
-        </div>
-        <div>
-          <h2 className="text-lg font-semibold tracking-wide text-white">{title}</h2>
-          {subtitle ? <p className="mt-1 text-sm text-slate-400">{subtitle}</p> : null}
-        </div>
-      </div>
-      {right}
-    </div>
-  );
-}
-
-function TopShell({ children }) {
-  return (
-    <div className="relative min-h-screen overflow-hidden bg-[#02040a] text-white">
-      <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(37,99,235,0.2),transparent_28%),radial-gradient(circle_at_80%_20%,rgba(59,130,246,0.08),transparent_20%),linear-gradient(to_bottom,#02040a,#050916_45%,#02040a)]" />
-      <div className="absolute inset-0 opacity-[0.08] [background-image:linear-gradient(rgba(255,255,255,0.08)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.08)_1px,transparent_1px)] [background-size:44px_44px]" />
-      <div className="relative">{children}</div>
-    </div>
-  );
-}
-
-function AuthScreen({ onSignIn, onSignUp }) {
-  const [mode, setMode] = useState("signin");
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-
-  const submit = () => {
-    setError("");
-    if (!email.trim() || !password.trim()) {
-      setError("Email and password are required.");
-      return;
-    }
-    if (mode === "signup") {
-      if (!name.trim()) {
-        setError("Name is required.");
-        return;
-      }
-      const result = onSignUp({ name: name.trim(), email: email.trim().toLowerCase(), password });
-      if (result?.error) setError(result.error);
-      return;
-    }
-    const result = onSignIn({ email: email.trim().toLowerCase(), password });
-    if (result?.error) setError(result.error);
-  };
-
-  return (
-    <TopShell>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col justify-center px-5 py-10 sm:px-8 lg:px-10">
-        <div className="grid items-center gap-8 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <Badge className="mb-5 border-blue-400/20 bg-blue-500/10 px-3 py-1 text-blue-200">Premium discipline system</Badge>
-            <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] sm:text-6xl">
-              Monk Mode is a contract, not a checklist.
-            </h1>
-            <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
-              Sign in. Lock the protocol. Clear six standards before midnight in New York. Break the contract once, and the run dies.
-            </p>
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                ["Strict timing", "Daily reset runs on New York time."],
-                ["Locked protocol", "No editing after the challenge starts."],
-                ["Hard consequence", "Miss one rule and restart from day one."],
-              ].map(([title, text]) => (
-                <GlassOrb key={title} className="p-4">
-                  <div className="text-sm font-medium text-white">{title}</div>
-                  <div className="mt-2 text-sm leading-6 text-slate-400">{text}</div>
-                </GlassOrb>
-              ))}
-            </div>
-          </div>
-
-          <GlassOrb className="p-5 sm:p-6">
-            <div className="mb-6 flex rounded-2xl border border-white/10 bg-white/[0.03] p-1">
-              {[
-                ["signin", "Sign in"],
-                ["signup", "Create account"],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  onClick={() => setMode(value)}
-                  className={cn(
-                    "flex-1 rounded-xl px-4 py-2 text-sm font-medium transition-all",
-                    mode === value ? "bg-blue-600 text-white shadow-[0_0_25px_rgba(37,99,235,0.28)]" : "text-slate-400 hover:text-white"
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-
-            <div className="space-y-4">
-              {mode === "signup" ? (
-                <div>
-                  <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Name</label>
-                  <div className="relative">
-                    <User className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                    <Input value={name} onChange={(e) => setName(e.target.value)} className="h-12 rounded-2xl border-white/10 bg-white/[0.04] pl-11 text-white placeholder:text-slate-500" placeholder="Your name" />
-                  </div>
-                </div>
-              ) : null}
-
-              <div>
-                <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Email</label>
-                <div className="relative">
-                  <Mail className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                  <Input value={email} onChange={(e) => setEmail(e.target.value)} className="h-12 rounded-2xl border-white/10 bg-white/[0.04] pl-11 text-white placeholder:text-slate-500" placeholder="you@example.com" />
-                </div>
-              </div>
-
-              <div>
-                <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Password</label>
-                <div className="relative">
-                  <KeyRound className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-500" />
-                  <Input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="h-12 rounded-2xl border-white/10 bg-white/[0.04] pl-11 text-white placeholder:text-slate-500" placeholder="••••••••" />
-                </div>
-              </div>
-            </div>
-
-            {error ? <div className="mt-4 rounded-2xl border border-red-500/20 bg-red-500/10 px-4 py-3 text-sm text-red-200">{error}</div> : null}
-
-            <Button onClick={submit} className="mt-6 h-12 w-full rounded-2xl bg-blue-600 text-white hover:bg-blue-500">
-              {mode === "signup" ? "Create account" : "Sign in"}
-              <ChevronRight className="ml-2 h-4 w-4" />
-            </Button>
-
-            <div className="mt-5 rounded-2xl border border-blue-400/15 bg-blue-500/5 p-4 text-sm leading-6 text-slate-400">
-              This canvas build uses local persistence to simulate a production auth flow. In a real deployment, swap this layer with Supabase Auth without changing the product behavior.
-            </div>
-          </GlassOrb>
-        </div>
-      </div>
-    </TopShell>
-  );
-}
-
-function Landing({ onStart, historyCount, user }) {
-  return (
-    <TopShell>
-      <div className="mx-auto flex min-h-screen max-w-6xl flex-col justify-between px-5 py-8 sm:px-8 lg:px-10">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 shadow-[0_0_40px_rgba(59,130,246,0.15)]">
-              <Shield className="h-6 w-6 text-blue-300" />
-            </div>
-            <div>
-              <div className="text-sm uppercase tracking-[0.35em] text-blue-300/80">Monk Mode</div>
-              <div className="text-xs text-slate-500">Discipline Operating System</div>
-            </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <Badge className="border-white/10 bg-white/5 text-slate-300">{maskEmail(user?.email)}</Badge>
-            {historyCount > 0 ? <Badge className="border-blue-400/20 bg-white/5 text-slate-300">{historyCount} archived runs</Badge> : null}
-          </div>
-        </div>
-
-        <div className="grid items-center gap-8 py-10 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <Badge className="mb-5 border-blue-400/20 bg-blue-500/10 px-3 py-1 text-blue-200">No edits. No skipped days. No excuses.</Badge>
-              <h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] text-white sm:text-6xl">
-                A locked commitment system for men who are done negotiating with themselves.
-              </h1>
-              <p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">
-                Choose your duration. Set exactly 6 non-negotiables. Clear every day before the clock hits zero. Miss one, and the run dies.
-              </p>
-            </motion.div>
-
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button onClick={onStart} className="h-12 rounded-2xl bg-blue-600 px-6 text-base font-medium text-white shadow-[0_0_35px_rgba(37,99,235,0.35)] hover:bg-blue-500">
-                Start Monk Mode
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
-
-            <div className="mt-10 grid gap-4 sm:grid-cols-3">
-              {[
-                ["24-hour consequence", "The clock does not care how you feel."],
-                ["Exactly 6 rules", "Tight, visible, non-negotiable standards."],
-                ["Failure resets the run", "Break the contract, start again from day one."],
-              ].map(([title, text]) => (
-                <GlassOrb key={title} className="p-4">
-                  <div className="text-sm font-medium text-white">{title}</div>
-                  <div className="mt-2 text-sm leading-6 text-slate-400">{text}</div>
-                </GlassOrb>
-              ))}
-            </div>
-          </div>
-
-          <motion.div initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.55 }}>
-            <GlassOrb className="relative overflow-hidden p-5 sm:p-6">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.18),transparent_34%)]" />
-              <div className="relative">
-                <div className="mb-5 flex items-center justify-between">
-                  <div>
-                    <div className="text-xs uppercase tracking-[0.3em] text-slate-500">Preview</div>
-                    <div className="mt-1 text-lg font-semibold text-white">Active Run Dashboard</div>
-                  </div>
-                  <Badge className="border-emerald-400/20 bg-emerald-500/10 text-emerald-300">Secure</Badge>
-                </div>
-                <div className="rounded-[24px] border border-white/10 bg-[#050816] p-5 shadow-inner shadow-black/40">
-                  <div className="text-center">
-                    <div className="text-xs uppercase tracking-[0.35em] text-blue-300/80">Time Remaining</div>
-                    <div className="mt-3 text-5xl font-semibold tracking-tight text-white sm:text-6xl">08:14:27</div>
-                    <div className="mt-2 text-sm text-slate-500">Day 14 of 30</div>
-                  </div>
-                  <div className="mt-6 h-2 overflow-hidden rounded-full bg-white/5">
-                    <div className="h-full w-[47%] rounded-full bg-gradient-to-r from-blue-700 via-blue-500 to-cyan-300 shadow-[0_0_24px_rgba(59,130,246,0.55)]" />
-                  </div>
-                  <div className="mt-5 grid gap-3">
-                    {[
-                      "Wake up on time",
-                      "No porn",
-                      "Workout",
-                      "Prayer / Bible",
-                      "Deep work block",
-                      "No phone before routine",
-                    ].map((item, i) => (
-                      <div key={item} className={cn("flex items-center justify-between rounded-2xl border px-4 py-3", i < 4 ? "border-blue-400/15 bg-blue-500/10" : "border-white/10 bg-white/[0.03]") }>
-                        <div className="text-sm text-slate-200">{item}</div>
-                        <div className={cn("rounded-xl p-2", i < 4 ? "bg-blue-500/20 text-blue-300" : "bg-white/5 text-slate-500")}>
-                          {i < 4 ? <Check className="h-4 w-4" /> : <Lock className="h-4 w-4" />}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </GlassOrb>
-          </motion.div>
-        </div>
-      </div>
-    </TopShell>
-  );
-}
-
+function Landing({ onStart, historyCount, user, soundEnabled, onToggleSound, onLogout }) { return <Shell><TopBar user={user} soundEnabled={soundEnabled} onToggleSound={onToggleSound} onLogout={onLogout} /><main className="mx-auto grid min-h-[calc(100dvh-96px)] max-w-6xl items-center gap-8 py-5 lg:grid-cols-[1.05fr_0.95fr]"><section><Badge className="mb-5 border border-blue-300/20 bg-blue-500/10 text-blue-100">Prayer. Fasting. Obedience.</Badge><h1 className="max-w-3xl text-4xl font-semibold leading-[1.02] tracking-tight sm:text-6xl">Begin a fast that trains the body and quiets the soul before Christ.</h1><p className="mt-5 max-w-2xl text-base leading-7 text-slate-400 sm:text-lg">Choose a season, define six daily commitments, keep your reason visible, and close each day before midnight.</p><Button onClick={onStart} className="mt-8 w-full bg-blue-600 px-6 text-base text-white sm:w-auto">Start Fasting Mode<ArrowRight className="ml-2 h-4 w-4" /></Button></section><Panel className="p-4 sm:p-5"><div className="mb-4 flex items-center justify-between"><div><div className="text-xs uppercase tracking-[0.28em] text-slate-500">iPhone view</div><div className="mt-1 text-lg font-semibold">Daily consecration</div></div><Badge className="border border-blue-300/20 bg-blue-500/10 text-blue-200">{historyCount ? `${historyCount} archived` : maskEmail(user?.email)}</Badge></div><div className="rounded-[30px] border border-white/10 bg-[#030712] p-4"><div className="text-center"><div className="text-xs uppercase tracking-[0.32em] text-blue-200/80">Time left today</div><div className="mt-3 text-5xl font-semibold">08:14:27</div><div className="mt-2 text-sm text-slate-500">Day 14 of 30</div></div><Progress value={47} className="mt-6 h-2" /><div className="mt-5 grid gap-3">{DEFAULT_RULES.map((item, index) => <div key={item} className="flex min-h-14 items-center justify-between rounded-2xl border border-white/10 bg-white/[0.035] px-4"><span className="text-sm text-slate-200">{item}</span>{index < 4 ? <Check className="h-4 w-4 text-blue-200" /> : <Lock className="h-4 w-4 text-slate-500" />}</div>)}</div></div></Panel></main></Shell>; }
 function Onboarding({ onCreate, onCancel }) {
-  const [step, setStep] = useState(1);
-  const [duration, setDuration] = useState(30);
-  const [rules, setRules] = useState(Array(6).fill(""));
-  const [mission, setMission] = useState("");
-  const allRulesFilled = rules.every((r) => r.trim().length > 0);
-
-  return (
-    <TopShell>
-      <div className="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-4xl">
-          <div className="mb-6 flex items-center justify-between">
-            <div>
-              <div className="text-sm uppercase tracking-[0.32em] text-blue-300/80">Monk Mode Setup</div>
-              <div className="mt-1 text-sm text-slate-500">Build the contract. Then lock it.</div>
-            </div>
-            <Button variant="ghost" onClick={onCancel} className="rounded-2xl text-slate-400 hover:bg-white/5 hover:text-white">Exit</Button>
-          </div>
-
-          <GlassOrb className="p-4 sm:p-6">
-            <div className="mb-6 flex items-center gap-2">
-              {[1, 2, 3, 4].map((n) => (
-                <div key={n} className={cn("h-2 flex-1 rounded-full", step >= n ? "bg-blue-500 shadow-[0_0_20px_rgba(59,130,246,0.55)]" : "bg-white/5")} />
-              ))}
-            </div>
-
-            <AnimatePresence mode="wait">
-              {step === 1 && (
-                <motion.div key="step1" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-                  <SectionTitle icon={Clock3} title="Choose duration" subtitle="Pick the length of the run. This choice defines the contract window." />
-                  <div className="mt-6 grid gap-4 sm:grid-cols-2">
-                    {DURATIONS.map((d) => (
-                      <button
-                        key={d}
-                        onClick={() => setDuration(d)}
-                        className={cn(
-                          "rounded-[26px] border p-5 text-left transition-all",
-                          duration === d ? "border-blue-400/40 bg-blue-500/10 shadow-[0_0_40px_rgba(37,99,235,0.18)]" : "border-white/10 bg-white/[0.03] hover:border-blue-400/20 hover:bg-white/[0.045]"
-                        )}
-                      >
-                        <div className="text-3xl font-semibold text-white">{d}</div>
-                        <div className="mt-2 text-sm text-slate-400">days of zero negotiation</div>
-                      </button>
-                    ))}
-                  </div>
-                  <div className="mt-8 flex justify-end">
-                    <Button onClick={() => setStep(2)} className="rounded-2xl bg-blue-600 px-5 hover:bg-blue-500">Continue</Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 2 && (
-                <motion.div key="step2" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-                  <SectionTitle icon={Target} title="Define exactly 6 non-negotiables" subtitle="These are daily standards, not vague intentions. Short. Clear. Binary." />
-                  <div className="mt-6 grid gap-4">
-                    {rules.map((rule, idx) => (
-                      <div key={idx}>
-                        <label className="mb-2 block text-xs uppercase tracking-[0.24em] text-slate-500">Rule 0{idx + 1}</label>
-                        <Input
-                          value={rule}
-                          onChange={(e) => {
-                            const next = [...rules];
-                            next[idx] = e.target.value;
-                            setRules(next);
-                          }}
-                          placeholder={[
-                            "Wake up on time",
-                            "No porn",
-                            "Workout",
-                            "Prayer / Bible",
-                            "Deep work block",
-                            "No phone before routine",
-                          ][idx]}
-                          className="h-12 rounded-2xl border-white/10 bg-white/[0.04] text-white placeholder:text-slate-500"
-                        />
-                      </div>
-                    ))}
-                  </div>
-                  <div className="mt-8 flex justify-between">
-                    <Button variant="ghost" onClick={() => setStep(1)} className="rounded-2xl text-slate-400 hover:bg-white/5 hover:text-white">Back</Button>
-                    <Button onClick={() => setStep(3)} disabled={!allRulesFilled} className="rounded-2xl bg-blue-600 px-5 hover:bg-blue-500 disabled:opacity-40">Continue</Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 3 && (
-                <motion.div key="step3" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-                  <SectionTitle icon={Flame} title="Mission statement" subtitle="Visible. Personal. Heavy enough to keep you from folding." />
-                  <div className="mt-6">
-                    <Textarea
-                      value={mission}
-                      onChange={(e) => setMission(e.target.value)}
-                      placeholder="Why am I doing this? Who am I becoming? What life am I refusing to go back to?"
-                      className="min-h-[180px] rounded-[24px] border-white/10 bg-white/[0.04] text-white placeholder:text-slate-500"
-                    />
-                  </div>
-                  <div className="mt-8 flex justify-between">
-                    <Button variant="ghost" onClick={() => setStep(2)} className="rounded-2xl text-slate-400 hover:bg-white/5 hover:text-white">Back</Button>
-                    <Button onClick={() => setStep(4)} className="rounded-2xl bg-blue-600 px-5 hover:bg-blue-500">Continue</Button>
-                  </div>
-                </motion.div>
-              )}
-
-              {step === 4 && (
-                <motion.div key="step4" initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -12 }}>
-                  <SectionTitle icon={Lock} title="Final confirmation" subtitle="Once the run starts, the contract is sealed." />
-                  <div className="mt-6 grid gap-5">
-                    <GlassOrb className="p-5">
-                      <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Duration</div>
-                      <div className="mt-2 text-3xl font-semibold text-white">{duration} days</div>
-                    </GlassOrb>
-
-                    <GlassOrb className="p-5">
-                      <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Your 6 non-negotiables</div>
-                      <div className="mt-4 grid gap-3">
-                        {rules.map((rule, idx) => (
-                          <div key={idx} className="rounded-2xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-200">{idx + 1}. {rule}</div>
-                        ))}
-                      </div>
-                    </GlassOrb>
-
-                    {mission.trim() ? (
-                      <GlassOrb className="p-5">
-                        <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Mission</div>
-                        <div className="mt-3 whitespace-pre-wrap text-sm leading-7 text-slate-300">{mission}</div>
-                      </GlassOrb>
-                    ) : null}
-
-                    <div className="rounded-[24px] border border-red-500/20 bg-red-500/10 p-5">
-                      <div className="flex items-start gap-3">
-                        <AlertTriangle className="mt-0.5 h-5 w-5 text-red-300" />
-                        <div>
-                          <div className="font-medium text-white">This is a locked commitment.</div>
-                          <ul className="mt-3 space-y-2 text-sm text-red-100/80">
-                            <li>You cannot skip days.</li>
-                            <li>You cannot edit the run after it starts.</li>
-                            <li>If even one rule is incomplete when the day ends, the run fails instantly.</li>
-                            <li>Failure means restart from day one.</li>
-                          </ul>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="mt-8 flex justify-between">
-                    <Button variant="ghost" onClick={() => setStep(3)} className="rounded-2xl text-slate-400 hover:bg-white/5 hover:text-white">Back</Button>
-                    <Button onClick={() => onCreate({ duration, rules: rules.map((r) => r.trim()), mission: mission.trim() })} className="rounded-2xl bg-blue-600 px-5 shadow-[0_0_35px_rgba(37,99,235,0.35)] hover:bg-blue-500">
-                      Lock It In
-                    </Button>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-          </GlassOrb>
-        </div>
-      </div>
-    </TopShell>
-  );
+  const [step, setStep] = useState(1); const [duration, setDuration] = useState(21); const [type, setType] = useState("sunrise"); const [rules, setRules] = useState(DEFAULT_RULES); const [mission, setMission] = useState(""); const allRules = rules.every((rule) => rule.trim()); const valid = step === 1 || (step === 2 && allRules) || (step === 3 && mission.trim().length >= 12);
+  const submit = () => { if (allRules && mission.trim().length >= 12) onCreate({ duration, fastingType: type, rules, mission: mission.trim() }); };
+  return <Shell><main className="mx-auto max-w-4xl pb-28 sm:pb-6"><div className="mb-5 flex items-center justify-between"><Brand /><Button onClick={onCancel} className="border border-white/10 bg-white/[0.04] text-slate-300">Cancel</Button></div><Panel className="mb-5 p-4"><div className="grid grid-cols-3 gap-2">{[[1, "Fast"], [2, "Rule"], [3, "Mission"]].map(([value, label]) => <div key={value} className={cn("rounded-2xl border px-3 py-3 text-center text-sm font-semibold", step === value ? "border-blue-300/30 bg-blue-500/15 text-blue-100" : "border-white/10 bg-white/[0.03] text-slate-500")}>{label}</div>)}</div></Panel>{step === 1 ? <Panel className="p-5 sm:p-6"><SectionTitle icon={CalendarDays} title="Choose the season" subtitle="Pick a length and shape for the fast." /><div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">{DURATIONS.map((days) => <button key={days} onClick={() => setDuration(days)} className={cn("min-h-20 rounded-2xl border px-4 text-left", duration === days ? "border-blue-300/35 bg-blue-500/15" : "border-white/10 bg-white/[0.035]")}><div className="text-2xl font-semibold">{days}</div><div className="text-xs uppercase tracking-[0.2em] text-slate-500">days</div></button>)}</div><div className="mt-6 grid gap-3 sm:grid-cols-2">{FASTING_TYPES.map((item) => <button key={item.id} onClick={() => setType(item.id)} className={cn("rounded-2xl border p-4 text-left", type === item.id ? "border-blue-300/35 bg-blue-500/15" : "border-white/10 bg-white/[0.035]")}><div className="font-semibold">{item.title}</div><div className="mt-2 text-sm leading-6 text-slate-400">{item.description}</div></button>)}</div></Panel> : null}{step === 2 ? <Panel className="p-5 sm:p-6"><SectionTitle icon={Target} title="Define six commitments" subtitle="Keep them concrete enough to obey before midnight." /><div className="mt-6 grid gap-3">{rules.map((rule, index) => <label key={index}><span className="mb-2 block text-xs uppercase tracking-[0.2em] text-slate-500">Commitment {index + 1}</span><Input value={rule} onChange={(e) => setRules((prev) => prev.map((item, i) => i === index ? e.target.value : item))} /></label>)}</div><div className="mt-5 flex flex-wrap gap-2">{EXAMPLES.map((example) => <button key={example} onClick={() => { const empty = rules.findIndex((rule) => !rule.trim()); if (empty >= 0) setRules((prev) => prev.map((item, i) => i === empty ? example : item)); }} className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-2 text-xs text-slate-400">{example}</button>)}</div></Panel> : null}{step === 3 ? <Panel className="p-5 sm:p-6"><SectionTitle icon={BookOpen} title="Write the reason" subtitle="Name the fast before God. Keep it sober and Christward." /><Textarea value={mission} onChange={(e) => setMission(e.target.value)} className="mt-6" placeholder="Lord Jesus, I am fasting to seek You with an undivided heart..." /><div className="mt-5 rounded-2xl border border-blue-300/15 bg-blue-500/5 p-4 text-sm leading-6 text-slate-400">Suggested frame: I am fasting to seek Christ, deny the flesh, pray with clarity, and obey where I have been divided.</div></Panel> : null}<div className="fixed inset-x-0 bottom-0 z-30 border-t border-white/10 bg-[#02040a]/88 px-[max(18px,env(safe-area-inset-left))] pb-[max(16px,env(safe-area-inset-bottom))] pt-3 backdrop-blur-xl sm:static sm:mt-5 sm:border-t-0 sm:bg-transparent sm:px-0 sm:pb-0 sm:pt-0"><div className="mx-auto flex max-w-4xl gap-3"><Button onClick={() => setStep(Math.max(1, step - 1))} disabled={step === 1} className="flex-1 border border-white/10 bg-white/[0.04] text-slate-300">Back</Button>{step < 3 ? <Button onClick={() => setStep(Math.min(3, step + 1))} disabled={!valid} className="flex-[1.4] bg-blue-600 text-white">Continue<ArrowRight className="ml-2 h-4 w-4" /></Button> : <Button onClick={submit} disabled={!valid} className="flex-[1.4] bg-blue-600 text-white">Lock the Fast<Lock className="ml-2 h-4 w-4" /></Button>}</div></div></main></Shell>;
+}
+function InstallBanner({ onDismiss }) { return <Panel className="p-4"><div className="flex items-start gap-3"><Smartphone className="mt-1 h-5 w-5 text-blue-200" /><div className="flex-1"><div className="text-sm font-semibold">Add Fasting Mode to your iPhone home screen.</div><p className="mt-1 text-sm leading-6 text-slate-400">Open Share, choose Add to Home Screen, and keep the fast one tap away.</p></div><button onClick={onDismiss} className="grid h-9 w-9 place-items-center rounded-xl border border-white/10 bg-white/[0.04]"><X className="h-4 w-4" /></button></div></Panel>; }
+function RuleCard({ rule, complete, onToggle }) { return <button onClick={onToggle} className={cn("flex min-h-16 w-full items-center justify-between gap-4 rounded-2xl border p-4 text-left", complete ? "border-blue-300/25 bg-blue-500/15" : "border-white/10 bg-white/[0.035]")}><div><div className="text-xs uppercase tracking-[0.22em] text-slate-500">Commitment {rule.order}</div><div className="mt-1 text-sm font-semibold leading-6">{rule.label}</div></div><div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white/5">{complete ? <Check className="h-5 w-5 text-blue-100" /> : <Lock className="h-5 w-5 text-slate-500" />}</div></button>; }
+function ScriptureCard({ scripture }) { return <Panel className="p-5"><SectionTitle icon={BookOpen} title="Scripture for the fast" subtitle={scripture.reference} /><blockquote className="mt-4 text-base leading-7 text-slate-200">"{scripture.text}"</blockquote><div className="mt-4 rounded-2xl border border-blue-300/15 bg-blue-500/5 p-4 text-sm leading-6 text-slate-400">{scripture.prompt}</div></Panel>; }
+function HistoryPanel({ history }) { const completed = history.filter((run) => run.status === "completed").length; const best = history.reduce((acc, run) => !acc || wonDays(run) > wonDays(acc) ? run : acc, null); return <Panel className="p-5"><SectionTitle icon={History} title="Fast history" subtitle="A sober record of completed and broken seasons." /><div className="mt-5 grid grid-cols-3 gap-3">{[["Archived", history.length], ["Completed", completed], ["Best", best ? wonDays(best) : 0]].map(([label, value]) => <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{label}</div><div className="mt-2 text-2xl font-semibold">{value}</div></div>)}</div><div className="mt-5 space-y-3">{!history.length ? <div className="rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-sm text-slate-400">No archived fasts yet.</div> : history.slice(0, 4).map((run) => { const pct = Math.round((wonDays(run) / run.duration) * 100); return <div key={run.id} className="rounded-2xl border border-white/10 bg-white/[0.035] p-4"><div className="flex items-start justify-between gap-3"><div><div className="text-sm font-semibold">{run.duration}-day {selectedFast(run.fastingType).label}</div><div className="mt-1 text-xs text-slate-500">Started {run.startDateKey}</div></div><Badge className={cn("border", run.status === "completed" ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-300" : "border-red-400/20 bg-red-500/10 text-red-300")}>{run.status === "completed" ? "Completed" : `Failed day ${run.failedDay}`}</Badge></div><Progress value={pct} className="mt-3 h-2" />{run.mission ? <p className="mt-3 line-clamp-2 text-sm leading-6 text-slate-400">{run.mission}</p> : null}</div>; })}</div></Panel>; }
+function Modal({ children }) { return <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/82 p-4 backdrop-blur-md">{children}</div>; }
+function FailureModal({ run, onRestart, onClose, audio }) { const played = useRef(false); useEffect(() => { if (!played.current) { played.current = true; audio.play("failure"); } }, [audio]); const failedDay = run.days.find((day) => day.dayNumber === run.failedDay); const incomplete = run.rules.filter((rule) => !failedDay?.completedRuleIds.includes(rule.id)); return <Modal><motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl rounded-[32px] border border-red-500/20 bg-[#050816] p-6"><div className="flex items-start justify-between gap-4"><div><div className="text-xs uppercase tracking-[0.32em] text-red-300/80">Fast broken</div><h2 className="mt-2 text-3xl font-semibold">Return without hiding.</h2><p className="mt-3 text-sm leading-6 text-slate-400">Day {run.failedDay} was not kept before midnight. Confess what happened, receive mercy, and begin again with a clean heart.</p></div><XCircle className="h-7 w-7 text-red-300" /></div><div className="mt-5 rounded-2xl border border-red-500/20 bg-red-500/5 p-4"><div className="text-sm font-semibold">Left unkept</div><div className="mt-3 space-y-2">{incomplete.map((item) => <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.035] px-4 py-3 text-sm">{item.label}</div>)}</div></div><div className="mt-6 grid gap-3 sm:grid-cols-2"><Button onClick={onRestart} className="bg-blue-600 text-white"><RotateCcw className="mr-2 h-4 w-4" />Begin Again</Button><Button onClick={onClose} className="border border-white/10 bg-white/[0.04]">Close</Button></div></motion.div></Modal>; }
+function CompletionModal({ run, onClose, audio }) { const played = useRef(false); useEffect(() => { if (!played.current) { played.current = true; audio.play("completion"); } }, [audio]); return <Modal><motion.div initial={{ opacity: 0, y: 18 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-xl rounded-[32px] border border-emerald-400/20 bg-[#050816] p-6 text-center"><div className="mx-auto grid h-16 w-16 place-items-center rounded-[22px] border border-emerald-400/20 bg-emerald-500/10 text-emerald-300"><Trophy className="h-8 w-8" /></div><div className="mt-5 text-xs uppercase tracking-[0.32em] text-emerald-300/80">Fast completed</div><h2 className="mt-2 text-3xl font-semibold">The season was kept.</h2><p className="mt-3 text-sm leading-6 text-slate-400">{run.duration} days of watchfulness, prayer, and self-denial were completed before Christ.</p>{run.mission ? <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-slate-300">{run.mission}</p> : null}<Button onClick={onClose} className="mt-6 bg-blue-600 px-6 text-white">Close</Button></motion.div></Modal>; }
+function DaySecured() { return <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="pointer-events-none fixed inset-0 z-40 grid place-items-center bg-[#02040a]/74 p-4 backdrop-blur-md"><motion.div initial={{ opacity: 0, scale: .92, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="rounded-[34px] border border-blue-300/20 bg-[#071022]/92 px-7 py-8 text-center"><Sparkles className="mx-auto h-10 w-10 text-blue-200" /><div className="mt-5 text-xs uppercase tracking-[0.34em] text-blue-200/80">Day secured</div><div className="mt-2 text-3xl font-semibold">Kept before the Lord.</div><div className="mt-3 text-sm text-slate-400">The commitments are closed. Remain watchful until morning.</div></motion.div></motion.div>; }
+function Dashboard({ user, run, history, ui, onUpdateRun, onDismissInstall, onLogout, onRestartFromFailure, completedRun, setCompletedRun, failureRun, clearFailure, onToggleSound, audio }) {
+  const [seconds, setSeconds] = useState(secondsLeftToday()); const [showSecured, setShowSecured] = useState(false); const secured = useRef(false); const day = currentDay(run); const done = day?.completedRuleIds.length || 0; const dayComplete = done === 6; const pct = Math.round(((run.currentDay - 1 + done / 6) / run.duration) * 100); const type = selectedFast(run.fastingType); const scripture = scriptureFor(run);
+  useEffect(() => { const timer = setInterval(() => setSeconds(secondsLeftToday()), 1000); return () => clearInterval(timer); }, []);
+  useEffect(() => { if (dayComplete && run.securedAnimationSeenFor !== day.dayNumber && !secured.current) { secured.current = true; setShowSecured(true); vibrate([18, 26, 18]); audio.play("secured"); onUpdateRun({ ...run, securedAnimationSeenFor: day.dayNumber }); const timer = setTimeout(() => setShowSecured(false), 2300); return () => clearTimeout(timer); } if (!dayComplete) secured.current = false; }, [audio, day, dayComplete, onUpdateRun, run]);
+  const toggleRule = (ruleId) => { if (dayComplete) return; audio.unlock(); vibrate([12]); audio.play("check"); onUpdateRun({ ...run, days: run.days.map((item) => { if (item.dayNumber !== run.currentDay) return item; const has = item.completedRuleIds.includes(ruleId); return { ...item, completedRuleIds: has ? item.completedRuleIds.filter((idValue) => idValue !== ruleId) : [...item.completedRuleIds, ruleId] }; }) }); };
+  return <Shell><TopBar user={user} soundEnabled={ui.soundEnabled} onToggleSound={onToggleSound} onLogout={onLogout} /><main className="mx-auto max-w-6xl pb-6"><div className="mb-5 flex flex-wrap gap-2"><Badge className="border border-white/10 bg-white/[0.045] text-slate-300">{user?.name}</Badge><Badge className="border border-blue-300/20 bg-blue-500/10 text-blue-100">{maskEmail(user?.email)}</Badge><Badge className="border border-white/10 bg-white/[0.045] text-slate-300">{type.label}</Badge></div><div className="grid gap-5 lg:grid-cols-[1.08fr_0.92fr]"><section className="space-y-5">{!ui.installedPromptDismissed ? <InstallBanner onDismiss={onDismissInstall} /> : null}<Panel className="p-5 sm:p-6"><div className="flex items-start justify-between gap-3"><div><div className="text-xs uppercase tracking-[0.32em] text-slate-500">Current fast</div><h1 className="mt-2 text-3xl font-semibold sm:text-4xl">Day {run.currentDay} of {run.duration}</h1><p className="mt-2 text-sm leading-6 text-slate-400">{dayComplete ? "The day is kept. Stay quiet, grateful, and watchful." : "Keep the commitments before midnight in New York."}</p></div><div className="rounded-2xl border border-white/10 bg-white/[0.035] px-4 py-3 text-right"><div className="text-xs uppercase tracking-[0.26em] text-slate-500">Days kept</div><div className="mt-1 text-2xl font-semibold">{wonDays(run)}</div></div></div><div className="mt-7 rounded-[30px] border border-blue-300/15 bg-[#030712] p-5 text-center"><div className="text-xs uppercase tracking-[0.34em] text-blue-200/80">Time left today</div><div className="mt-4 text-5xl font-semibold sm:text-7xl">{formatCountdown(seconds)}</div><div className="mt-3 text-sm text-slate-500">Daily reset at 12:00 AM New York time</div></div><div className="mt-6 grid grid-cols-3 gap-3">{[["Today", `${done}/6`], ["Fast", `${pct}%`], ["Status", dayComplete ? "Kept" : "Open"]].map(([label, value]) => <div key={label} className="rounded-2xl border border-white/10 bg-white/[0.035] p-3"><div className="text-xs uppercase tracking-[0.2em] text-slate-500">{label}</div><div className="mt-2 text-2xl font-semibold">{value}</div></div>)}</div><Progress value={(done / 6) * 100} className="mt-5 h-3" /></Panel><Panel className="p-5 sm:p-6"><SectionTitle icon={Target} title="Today's commitments" subtitle="The rule is locked for this fast. Clear all six before the day closes." /><div className="mt-6 grid gap-3">{run.rules.map((rule) => <RuleCard key={rule.id} rule={rule} complete={day.completedRuleIds.includes(rule.id)} onToggle={() => toggleRule(rule.id)} />)}</div></Panel></section><aside className="space-y-5"><ScriptureCard scripture={scripture} /><Panel className="p-5"><SectionTitle icon={Flame} title="Why I am fasting" subtitle={type.title} /><div className="mt-4 rounded-2xl border border-white/10 bg-white/[0.035] p-4 text-sm leading-7 text-slate-300">{run.mission?.trim() ? run.mission : "No mission statement was set for this fast."}</div></Panel><Panel className="p-5"><SectionTitle icon={CalendarDays} title="Fast timeline" subtitle="Kept, current, and unstarted days." /><div className="mt-5 grid grid-cols-7 gap-2 sm:grid-cols-8">{Array.from({ length: run.duration }, (_, index) => index + 1).map((dayNum) => { const item = run.days.find((entry) => entry.dayNumber === dayNum); const isCurrent = dayNum === run.currentDay; const isWon = item?.status === "won"; const isFailed = item?.status === "failed"; return <div key={dayNum} className={cn("grid aspect-square place-items-center rounded-xl border text-xs font-semibold", isWon && "border-blue-300/20 bg-blue-500/10 text-blue-200", isFailed && "border-red-400/20 bg-red-500/10 text-red-300", isCurrent && !isWon && !isFailed && "border-white/20 bg-white/[0.07]", !isCurrent && !isWon && !isFailed && "border-white/10 bg-white/[0.03] text-slate-500")}>{dayNum}</div>; })}</div></Panel><HistoryPanel history={history} /></aside></div></main><AnimatePresence>{showSecured ? <DaySecured /> : null}</AnimatePresence>{failureRun ? <FailureModal run={failureRun} onRestart={onRestartFromFailure} onClose={clearFailure} audio={audio} /> : null}{completedRun ? <CompletionModal run={completedRun} onClose={() => setCompletedRun(null)} audio={audio} /> : null}</Shell>;
 }
 
-function RuleCard({ rule, complete, onToggle, locked }) {
-  return (
-    <motion.button
-      whileTap={{ scale: locked ? 1 : 0.985 }}
-      onClick={onToggle}
-      disabled={locked}
-      className={cn(
-        "w-full rounded-[24px] border p-4 text-left transition-all",
-        complete ? "border-blue-400/30 bg-blue-500/10 shadow-[0_0_30px_rgba(37,99,235,0.16)]" : "border-white/10 bg-white/[0.03] hover:border-blue-400/20 hover:bg-white/[0.045]",
-        locked && "cursor-default"
-      )}
-    >
-      <div className="flex items-center justify-between gap-4">
-        <div>
-          <div className="text-xs uppercase tracking-[0.24em] text-slate-500">Non-negotiable</div>
-          <div className="mt-2 text-base font-medium leading-6 text-white">{rule.label}</div>
-        </div>
-        <div className={cn("flex h-11 w-11 items-center justify-center rounded-2xl border", complete ? "border-blue-400/30 bg-blue-500/20 text-blue-300" : "border-white/10 bg-white/[0.04] text-slate-500")}>
-          {complete ? <Check className="h-5 w-5" /> : <Lock className="h-4 w-4" />}
-        </div>
-      </div>
-    </motion.button>
-  );
-}
-
-function InstallBanner({ onDismiss }) {
-  return (
-    <GlassOrb className="p-4">
-      <div className="flex items-start gap-3">
-        <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 text-blue-300">
-          <Smartphone className="h-5 w-5" />
-        </div>
-        <div className="flex-1">
-          <div className="text-sm font-medium text-white">Install-ready mobile shell</div>
-          <div className="mt-1 text-sm leading-6 text-slate-400">
-            When deployed, add this to your home screen or link it inside GHL for one-tap access from your phone.
-          </div>
-        </div>
-        <Button variant="ghost" onClick={onDismiss} className="rounded-xl text-slate-400 hover:bg-white/5 hover:text-white">Dismiss</Button>
-      </div>
-    </GlassOrb>
-  );
-}
-
-function HistoryPanel({ history }) {
-  return (
-    <GlassOrb className="p-5">
-      <div className="mb-4 flex items-center justify-between">
-        <SectionTitle icon={History} title="Run Archive" subtitle="Past wins and failures remain visible." />
-      </div>
-      {history.length === 0 ? (
-        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4 text-sm text-slate-400">No archived runs yet.</div>
-      ) : (
-        <div className="space-y-3">
-          {history.map((run) => {
-            const completionPercent = Math.round(((run.days.filter((d) => d.status === "won").length) / run.duration) * 100);
-            return (
-              <div key={run.id} className="rounded-[22px] border border-white/10 bg-white/[0.03] p-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div>
-                    <div className="text-sm font-medium text-white">{run.duration}-day protocol</div>
-                    <div className="mt-1 text-xs text-slate-500">Started {run.startDateKey}</div>
-                  </div>
-                  <Badge className={cn(run.status === "completed" ? "border-emerald-400/20 bg-emerald-500/10 text-emerald-300" : "border-red-400/20 bg-red-500/10 text-red-300")}>
-                    {run.status === "completed" ? "Completed" : `Failed day ${run.failedDay}`}
-                  </Badge>
-                </div>
-                <div className="mt-3 flex items-center justify-between text-xs uppercase tracking-[0.22em] text-slate-500">
-                  <span>Completion</span>
-                  <span>{completionPercent}%</span>
-                </div>
-                <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/5">
-                  <div className="h-full rounded-full bg-gradient-to-r from-blue-700 via-blue-500 to-cyan-300" style={{ width: `${completionPercent}%` }} />
-                </div>
-                {run.mission ? <p className="mt-3 line-clamp-3 text-sm leading-6 text-slate-400">{run.mission}</p> : null}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </GlassOrb>
-  );
-}
-
-function FailureModal({ run, onRestart, onLeave }) {
-  const failedDay = run.days.find((d) => d.dayNumber === run.failedDay);
-  const incomplete = run.rules.filter((r) => !failedDay?.completedRuleIds.includes(r.id));
-
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <motion.div initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-2xl rounded-[32px] border border-red-500/20 bg-[#050816] p-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.65)]">
-        <div className="mb-6 flex items-start justify-between gap-4">
-          <div>
-            <div className="text-xs uppercase tracking-[0.34em] text-red-300/80">Run Failed</div>
-            <h2 className="mt-2 text-3xl font-semibold">The contract was broken.</h2>
-            <p className="mt-3 text-sm leading-6 text-slate-400">Day {run.failedDay} was not fully cleared before the deadline. Monk Mode does not negotiate.</p>
-          </div>
-          <div className="rounded-2xl border border-red-400/20 bg-red-500/10 p-3 text-red-300">
-            <XCircle className="h-6 w-6" />
-          </div>
-        </div>
-
-        {run.mission ? (
-          <div className="mb-5 rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-            <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Mission</div>
-            <div className="mt-2 text-sm leading-7 text-slate-300">{run.mission}</div>
-          </div>
-        ) : null}
-
-        <div className="rounded-2xl border border-red-500/20 bg-red-500/5 p-4">
-          <div className="text-sm font-medium text-white">Left incomplete</div>
-          <div className="mt-3 space-y-2">
-            {incomplete.map((item) => (
-              <div key={item.id} className="rounded-xl border border-white/10 bg-white/[0.03] px-4 py-3 text-sm text-slate-200">
-                {item.label}
-              </div>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
-          <Button onClick={onRestart} className="h-12 rounded-2xl bg-blue-600 hover:bg-blue-500">Restart From Day 1</Button>
-          <Button onClick={onLeave} variant="outline" className="h-12 rounded-2xl border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]">Leave</Button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-function CompletionModal({ run, onClose }) {
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4 backdrop-blur-md">
-      <motion.div initial={{ opacity: 0, y: 18, scale: 0.98 }} animate={{ opacity: 1, y: 0, scale: 1 }} className="w-full max-w-xl rounded-[32px] border border-emerald-400/20 bg-[#050816] p-6 text-white shadow-[0_30px_120px_rgba(0,0,0,0.65)]">
-        <div className="text-center">
-          <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] border border-emerald-400/20 bg-emerald-500/10 text-emerald-300">
-            <Trophy className="h-8 w-8" />
-          </div>
-          <div className="mt-5 text-xs uppercase tracking-[0.34em] text-emerald-300/80">Protocol Complete</div>
-          <h2 className="mt-2 text-3xl font-semibold">You finished the run.</h2>
-          <p className="mt-3 text-sm leading-6 text-slate-400">{run.duration} days. No skipped days. No edits. No retreat.</p>
-          {run.mission ? <p className="mx-auto mt-5 max-w-lg text-sm leading-7 text-slate-300">{run.mission}</p> : null}
-          <Button onClick={onClose} className="mt-6 h-12 rounded-2xl bg-blue-600 px-6 hover:bg-blue-500">Close</Button>
-        </div>
-      </motion.div>
-    </div>
-  );
-}
-
-function DaySecuredOverlay() {
-  return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="pointer-events-none fixed inset-0 z-40 flex items-center justify-center bg-[#02040a]/72 backdrop-blur-md">
-      <motion.div initial={{ opacity: 0, scale: 0.92, y: 18 }} animate={{ opacity: 1, scale: 1, y: 0 }} className="rounded-[34px] border border-blue-400/20 bg-[#071022]/90 px-8 py-8 text-center shadow-[0_0_80px_rgba(37,99,235,0.22)]">
-        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-[22px] border border-blue-400/20 bg-blue-500/10 text-blue-300 shadow-[0_0_40px_rgba(59,130,246,0.25)]">
-          <Sparkles className="h-8 w-8" />
-        </div>
-        <div className="mt-5 text-xs uppercase tracking-[0.36em] text-blue-300/80">Day Secured</div>
-        <div className="mt-2 text-3xl font-semibold text-white">Contract upheld.</div>
-        <div className="mt-3 text-sm text-slate-400">The day is locked. Midnight cannot take this one from you.</div>
-      </motion.div>
-    </motion.div>
-  );
-}
-
-function Dashboard({ user, run, history, ui, onUpdateRun, onStartNew, onDismissInstall, onLogout, onRestartFromFailure, completedRun, setCompletedRun, showFailureRun, clearFailureModal }) {
-  const [secondsLeft, setSecondsLeft] = useState(getSecondsRemainingInNYDay());
-  const [showSecured, setShowSecured] = useState(false);
-  const secureTriggeredRef = useRef(false);
-
-  useEffect(() => {
-    const interval = setInterval(() => setSecondsLeft(getSecondsRemainingInNYDay()), 1000);
-    return () => clearInterval(interval);
-  }, []);
-
-  const currentDay = getCurrentDayRecord(run);
-  const doneCount = currentDay?.completedRuleIds.length || 0;
-  const dayComplete = doneCount === 6;
-  const challengeProgress = Math.round(((run.currentDay - 1 + doneCount / 6) / run.duration) * 100);
-  const currentStreak = run.days.filter((d) => d.status === "won").length + (dayComplete ? 1 : 0);
-  const completedDays = run.days.filter((d) => d.status === "won").length;
-
-  useEffect(() => {
-    if (dayComplete && run.securedAnimationSeenFor !== currentDay.dayNumber && !secureTriggeredRef.current) {
-      secureTriggeredRef.current = true;
-      setShowSecured(true);
-      pulseFeedback();
-      playSecureTone();
-      onUpdateRun({ ...run, securedAnimationSeenFor: currentDay.dayNumber });
-      const t = setTimeout(() => setShowSecured(false), 2200);
-      return () => clearTimeout(t);
-    }
-    if (!dayComplete) secureTriggeredRef.current = false;
-  }, [dayComplete, run, currentDay, onUpdateRun]);
-
-  const toggleRule = (ruleId) => {
-    if (dayComplete) return;
-    pulseFeedback();
-    const updatedDays = run.days.map((d) => {
-      if (d.dayNumber !== run.currentDay) return d;
-      const has = d.completedRuleIds.includes(ruleId);
-      return {
-        ...d,
-        completedRuleIds: has ? d.completedRuleIds.filter((id) => id !== ruleId) : [...d.completedRuleIds, ruleId],
-      };
-    });
-    onUpdateRun({ ...run, days: updatedDays });
-  };
-
-  return (
-    <TopShell>
-      <div className="mx-auto max-w-7xl px-4 py-5 sm:px-6 lg:px-8">
-        <div className="mb-5 flex flex-wrap items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="rounded-2xl border border-blue-400/20 bg-blue-500/10 p-3 text-blue-300 shadow-[0_0_30px_rgba(59,130,246,0.16)]">
-              <Shield className="h-6 w-6" />
-            </div>
-            <div>
-              <div className="text-sm uppercase tracking-[0.32em] text-blue-300/80">Monk Mode</div>
-              <div className="text-xs text-slate-500">America/New_York clock</div>
-            </div>
-          </div>
-
-          <div className="flex flex-wrap items-center gap-2">
-            <Badge className="border-white/10 bg-white/5 text-slate-300">{user?.name}</Badge>
-            <Badge className="border-blue-400/20 bg-white/5 text-slate-300">{maskEmail(user?.email)}</Badge>
-            <Button variant="outline" onClick={onStartNew} className="rounded-2xl border-white/10 bg-white/[0.03] text-white hover:bg-white/[0.06]">New Run</Button>
-            <Button variant="ghost" onClick={onLogout} className="rounded-2xl text-slate-400 hover:bg-white/5 hover:text-white">
-              <LogOut className="mr-2 h-4 w-4" />
-              Sign out
-            </Button>
-          </div>
-        </div>
-
-        <div className="grid gap-5 lg:grid-cols-[1.1fr_0.9fr]">
-          <div className="space-y-5">
-            {!ui.installedPromptDismissed ? <InstallBanner onDismiss={onDismissInstall} /> : null}
-
-            <GlassOrb className="relative overflow-hidden p-5 sm:p-6">
-              <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(59,130,246,0.14),transparent_35%)]" />
-              <div className="relative">
-                <div className="flex flex-wrap items-start justify-between gap-3">
-                  <div>
-                    <div className="text-xs uppercase tracking-[0.34em] text-slate-500">Current Run</div>
-                    <div className="mt-2 text-3xl font-semibold text-white sm:text-4xl">Day {run.currentDay} of {run.duration}</div>
-                    <div className="mt-2 text-sm text-slate-400">{dayComplete ? "Day secured. Wait for the next reset." : "Every rule must be complete before the clock hits zero."}</div>
-                  </div>
-                  <div className="rounded-[24px] border border-white/10 bg-white/[0.03] px-4 py-3 text-right">
-                    <div className="text-xs uppercase tracking-[0.3em] text-slate-500">Current streak</div>
-                    <div className="mt-1 text-2xl font-semibold text-white">{currentStreak}</div>
-                  </div>
-                </div>
-
-                <div className="mt-8 rounded-[28px] border border-blue-400/15 bg-[#050816] p-5 text-center shadow-inner shadow-black/40">
-                  <div className="text-xs uppercase tracking-[0.36em] text-blue-300/80">Time Left Today</div>
-                  <div className={cn("mt-4 text-5xl font-semibold tracking-tight sm:text-7xl", dayComplete ? "text-blue-300" : "text-white")}>{formatCountdown(secondsLeft)}</div>
-                  <div className="mt-3 text-sm text-slate-500">New York local day reset at 12:00 AM</div>
-                </div>
-
-                <div className="mt-6 grid gap-4 sm:grid-cols-3">
-                  <GlassOrb className="p-4">
-                    <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Daily progress</div>
-                    <div className="mt-2 text-2xl font-semibold text-white">{doneCount}/6</div>
-                  </GlassOrb>
-                  <GlassOrb className="p-4">
-                    <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Challenge progress</div>
-                    <div className="mt-2 text-2xl font-semibold text-white">{challengeProgress}%</div>
-                  </GlassOrb>
-                  <GlassOrb className="p-4">
-                    <div className="text-xs uppercase tracking-[0.28em] text-slate-500">Status</div>
-                    <div className="mt-2 text-2xl font-semibold text-white">{dayComplete ? "Secured" : "In play"}</div>
-                  </GlassOrb>
-                </div>
-
-                <div className="mt-6">
-                  <div className="mb-3 flex items-center justify-between text-sm text-slate-400">
-                    <span>Daily completion</span>
-                    <span>{Math.round((doneCount / 6) * 100)}%</span>
-                  </div>
-                  <Progress value={(doneCount / 6) * 100} className="h-3 bg-white/5" />
-                </div>
-              </div>
-            </GlassOrb>
-
-            <GlassOrb className="p-5 sm:p-6">
-              <SectionTitle icon={Target} title="Today's non-negotiables" subtitle="No edits. No substitutions. Clear the list or lose the run." right={<Badge className="border-white/10 bg-white/[0.03] text-slate-300">Locked protocol</Badge>} />
-              <div className="mt-6 grid gap-4">
-                {run.rules.map((rule) => (
-                  <RuleCard key={rule.id} rule={rule} complete={currentDay.completedRuleIds.includes(rule.id)} locked={false} onToggle={() => toggleRule(rule.id)} />
-                ))}
-              </div>
-            </GlassOrb>
-          </div>
-
-          <div className="space-y-5">
-            <GlassOrb className="p-5">
-              <SectionTitle icon={Flame} title="Mission" subtitle="Keep the reason visible. Make retreat expensive." />
-              <div className="mt-4 rounded-[22px] border border-white/10 bg-white/[0.03] p-4 text-sm leading-7 text-slate-300">
-                {run.mission?.trim() ? run.mission : "No mission statement set for this run."}
-              </div>
-            </GlassOrb>
-
-            <GlassOrb className="p-5">
-              <SectionTitle icon={CalendarDays} title="Challenge timeline" subtitle="Clean history of wins across the current run." />
-              <div className="mt-5 grid grid-cols-5 gap-3 sm:grid-cols-6">
-                {Array.from({ length: run.duration }, (_, i) => i + 1).map((dayNum) => {
-                  const day = run.days.find((d) => d.dayNumber === dayNum);
-                  const isCurrent = dayNum === run.currentDay;
-                  const isWon = day?.status === "won";
-                  const isFailed = day?.status === "failed";
-                  const isPending = !day || day.status === "pending";
-                  return (
-                    <div key={dayNum} className={cn("flex h-12 items-center justify-center rounded-2xl border text-sm font-medium", isWon && "border-blue-400/20 bg-blue-500/10 text-blue-300", isFailed && "border-red-400/20 bg-red-500/10 text-red-300", isCurrent && !isWon && !isFailed && "border-white/15 bg-white/[0.06] text-white", !isCurrent && isPending && "border-white/10 bg-white/[0.03] text-slate-500")}>
-                      {dayNum}
-                    </div>
-                  );
-                })}
-              </div>
-            </GlassOrb>
-
-            <GlassOrb className="p-5">
-              <SectionTitle icon={Download} title="Run stats" subtitle="Clean signal. No fluff." />
-              <div className="mt-5 grid gap-3 sm:grid-cols-2">
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="text-xs uppercase tracking-[0.25em] text-slate-500">Days won</div>
-                  <div className="mt-2 text-2xl font-semibold text-white">{completedDays}</div>
-                </div>
-                <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                  <div className="text-xs uppercase tracking-[0.25em] text-slate-500">Rules locked</div>
-                  <div className="mt-2 text-2xl font-semibold text-white">6</div>
-                </div>
-              </div>
-            </GlassOrb>
-
-            <HistoryPanel history={history} />
-          </div>
-        </div>
-      </div>
-
-      <AnimatePresence>{showSecured ? <DaySecuredOverlay /> : null}</AnimatePresence>
-      {showFailureRun ? <FailureModal run={showFailureRun} onRestart={onRestartFromFailure} onLeave={clearFailureModal} /> : null}
-      {completedRun ? <CompletionModal run={completedRun} onClose={() => setCompletedRun(null)} /> : null}
-    </TopShell>
-  );
-}
-
-export default function MonkModeApp() {
-  const [state, setState] = useState(deepClone(DEFAULT_STATE));
-  const [screen, setScreen] = useState("loading");
-  const [failureModalRun, setFailureModalRun] = useState(null);
-  const [completedModalRun, setCompletedModalRun] = useState(null);
-
-  useEffect(() => {
-    const loaded = safeStorageLoad();
-    const evaluatedRuns = evaluateRun(loaded.runs);
-    const next = { ...loaded, runs: evaluatedRuns };
-    setState(next);
-
-    const latestHistory = evaluatedRuns.history?.[0];
-    if (latestHistory?.status === "failed") setFailureModalRun(latestHistory);
-    if (latestHistory?.status === "completed") setCompletedModalRun(latestHistory);
-
-    if (!next.auth.user) setScreen("auth");
-    else if (next.runs.activeRun) setScreen("dashboard");
-    else setScreen("landing");
-  }, []);
-
-  useEffect(() => {
-    if (screen !== "loading") safeStorageSave(state);
-  }, [state, screen]);
-
-  useEffect(() => {
-    if (screen === "loading") return;
-    const interval = setInterval(() => {
-      setState((prev) => {
-        const nextRuns = evaluateRun(prev.runs);
-        if (nextRuns.history?.[0] && prev.runs.history?.[0]?.id !== nextRuns.history[0].id) {
-          if (nextRuns.history[0].status === "failed") setFailureModalRun(nextRuns.history[0]);
-          if (nextRuns.history[0].status === "completed") setCompletedModalRun(nextRuns.history[0]);
-        }
-        if (!nextRuns.activeRun && screen === "dashboard") setScreen("landing");
-        return { ...prev, runs: nextRuns };
-      });
-    }, 1000);
-    return () => clearInterval(interval);
-  }, [screen]);
-
-  const signUp = ({ name, email, password }) => {
-    let response = null;
-    setState((prev) => {
-      const exists = prev.auth.users.some((u) => u.email === email);
-      if (exists) {
-        response = { error: "An account with this email already exists." };
-        return prev;
-      }
-      const user = {
-        id: crypto.randomUUID(),
-        name,
-        email,
-        password,
-        createdAt: new Date().toISOString(),
-      };
-      response = { ok: true };
-      const next = {
-        ...prev,
-        auth: {
-          users: [...prev.auth.users, user],
-          user,
-          session: { userId: user.id, createdAt: new Date().toISOString() },
-        },
-      };
-      setScreen(next.runs.activeRun ? "dashboard" : "landing");
-      return next;
-    });
-    return response;
-  };
-
-  const signIn = ({ email, password }) => {
-    let response = null;
-    setState((prev) => {
-      const user = prev.auth.users.find((u) => u.email === email && u.password === password);
-      if (!user) {
-        response = { error: "Invalid email or password." };
-        return prev;
-      }
-      response = { ok: true };
-      const next = {
-        ...prev,
-        auth: {
-          ...prev.auth,
-          user,
-          session: { userId: user.id, createdAt: new Date().toISOString() },
-        },
-      };
-      setScreen(next.runs.activeRun ? "dashboard" : "landing");
-      return next;
-    });
-    return response;
-  };
-
-  const signOut = () => {
-    setState((prev) => ({ ...prev, auth: { ...prev.auth, user: null, session: null } }));
-    setScreen("auth");
-  };
-
-  const createChallenge = ({ duration, rules, mission }) => {
-    const newRun = createRun({ duration, rules, mission });
-    setState((prev) => ({ ...prev, runs: { ...prev.runs, activeRun: newRun } }));
-    setScreen("dashboard");
-  };
-
-  const updateRun = (updatedRun) => {
-    setState((prev) => ({ ...prev, runs: { ...prev.runs, activeRun: updatedRun } }));
-  };
-
-  const dismissInstall = () => {
-    setState((prev) => ({ ...prev, ui: { ...prev.ui, installedPromptDismissed: true } }));
-  };
-
-  const restartFromFailure = () => {
-    setFailureModalRun(null);
-    setScreen("onboarding");
-  };
-
-  const startNewRun = () => {
-    if (state.runs.activeRun) return;
-    setScreen("onboarding");
-  };
-
-  if (screen === "loading") {
-    return <TopShell><div className="flex min-h-screen items-center justify-center text-slate-400">Loading Monk Mode...</div></TopShell>;
-  }
-
-  if (screen === "auth") {
-    return <AuthScreen onSignIn={signIn} onSignUp={signUp} />;
-  }
-
-  if (screen === "onboarding") {
-    return <Onboarding onCreate={createChallenge} onCancel={() => setScreen(state.runs.activeRun ? "dashboard" : "landing")} />;
-  }
-
-  if (state.runs.activeRun) {
-    return (
-      <Dashboard
-        user={state.auth.user}
-        run={state.runs.activeRun}
-        history={state.runs.history}
-        ui={state.ui}
-        onUpdateRun={updateRun}
-        onStartNew={startNewRun}
-        onDismissInstall={dismissInstall}
-        onLogout={signOut}
-        onRestartFromFailure={restartFromFailure}
-        completedRun={completedModalRun}
-        setCompletedRun={setCompletedModalRun}
-        showFailureRun={failureModalRun}
-        clearFailureModal={() => setFailureModalRun(null)}
-      />
-    );
-  }
-
-  return <Landing onStart={() => setScreen("onboarding")} historyCount={state.runs.history.length} user={state.auth.user} />;
+export default function FastingModeApp() {
+  const [state, setState] = useState(clone(DEFAULT_STATE)); const [screen, setScreen] = useState("loading"); const [failureRun, setFailureRun] = useState(null); const [completedRun, setCompletedRun] = useState(null); const audio = useAudio(state.ui.soundEnabled);
+  useEffect(() => { const loaded = loadState(); const runs = evaluateRun(loaded.runs); const next = { ...loaded, runs }; setState(next); const latest = runs.history?.[0]; if (latest?.status === "failed") setFailureRun(latest); if (latest?.status === "completed") setCompletedRun(latest); if (!next.auth.user) setScreen("auth"); else if (next.runs.activeRun) setScreen("dashboard"); else setScreen("landing"); }, []);
+  useEffect(() => { if (screen !== "loading") saveState(state); }, [state, screen]);
+  useEffect(() => { if (screen === "loading") return undefined; const timer = setInterval(() => { setState((prev) => { const runs = evaluateRun(prev.runs); if (runs.history?.[0] && prev.runs.history?.[0]?.id !== runs.history[0].id) { if (runs.history[0].status === "failed") setFailureRun(runs.history[0]); if (runs.history[0].status === "completed") setCompletedRun(runs.history[0]); } if (!runs.activeRun && screen === "dashboard") setScreen("landing"); return { ...prev, runs }; }); }, 1000); return () => clearInterval(timer); }, [screen]);
+  const toggleSound = () => { vibrate([10]); setState((prev) => { const soundEnabled = !prev.ui.soundEnabled; if (soundEnabled) audio.unlock(); return { ...prev, ui: { ...prev.ui, soundEnabled } }; }); };
+  const signUp = ({ name, email, password }) => { let response = null; setState((prev) => { if (prev.auth.users.some((user) => user.email === email)) { response = { error: "An account with this email already exists." }; return prev; } const user = { id: newId(), name, email, password, createdAt: new Date().toISOString() }; response = { ok: true }; const next = { ...prev, auth: { users: [...prev.auth.users, user], user, session: { userId: user.id, createdAt: new Date().toISOString() } } }; setScreen(next.runs.activeRun ? "dashboard" : "landing"); return next; }); return response; };
+  const signIn = ({ email, password }) => { let response = null; setState((prev) => { const user = prev.auth.users.find((item) => item.email === email && item.password === password); if (!user) { response = { error: "Invalid email or password." }; return prev; } response = { ok: true }; const next = { ...prev, auth: { ...prev.auth, user, session: { userId: user.id, createdAt: new Date().toISOString() } } }; setScreen(next.runs.activeRun ? "dashboard" : "landing"); return next; }); return response; };
+  const signOut = () => { setState((prev) => ({ ...prev, auth: { ...prev.auth, user: null, session: null } })); setScreen("auth"); };
+  const createChallenge = ({ duration, rules, mission, fastingType }) => { audio.unlock(); setState((prev) => ({ ...prev, runs: { ...prev.runs, activeRun: createRun({ duration, rules, mission, fastingType }) } })); setScreen("dashboard"); };
+  const updateRun = (activeRun) => setState((prev) => ({ ...prev, runs: { ...prev.runs, activeRun } }));
+  const dismissInstall = () => setState((prev) => ({ ...prev, ui: { ...prev.ui, installedPromptDismissed: true } }));
+  const restartFromFailure = () => { setFailureRun(null); setScreen("onboarding"); };
+  if (screen === "loading") return <Shell><div className="grid min-h-dvh place-items-center text-slate-400">Loading Fasting Mode...</div></Shell>;
+  if (screen === "auth") return <AuthScreen onSignIn={signIn} onSignUp={signUp} soundEnabled={state.ui.soundEnabled} onToggleSound={toggleSound} />;
+  if (screen === "onboarding") return <Onboarding onCreate={createChallenge} onCancel={() => setScreen(state.runs.activeRun ? "dashboard" : "landing")} />;
+  if (state.runs.activeRun) return <Dashboard user={state.auth.user} run={state.runs.activeRun} history={state.runs.history} ui={state.ui} onUpdateRun={updateRun} onDismissInstall={dismissInstall} onLogout={signOut} onRestartFromFailure={restartFromFailure} completedRun={completedRun} setCompletedRun={setCompletedRun} failureRun={failureRun} clearFailure={() => setFailureRun(null)} onToggleSound={toggleSound} audio={audio} />;
+  return <Landing onStart={() => setScreen("onboarding")} historyCount={state.runs.history.length} user={state.auth.user} soundEnabled={state.ui.soundEnabled} onToggleSound={toggleSound} onLogout={signOut} />;
 }
