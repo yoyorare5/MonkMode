@@ -19,6 +19,7 @@ body {
   background: #02040a;
   overscroll-behavior-y: none;
   -webkit-tap-highlight-color: transparent;
+  -webkit-text-size-adjust: 100%;
 }
 
 button,
@@ -29,6 +30,7 @@ textarea {
 
 button {
   touch-action: manipulation;
+  user-select: none;
 }
 
 #root {
