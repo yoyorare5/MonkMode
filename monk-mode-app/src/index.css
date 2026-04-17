@@ -38,6 +38,17 @@ button {
   background: #02040a;
 }
 
+*:has(> svg.lucide-flame) {
+  background-image: url("/favicon.svg");
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: 86%;
+}
+
+*:has(> svg.lucide-flame) > svg.lucide-flame {
+  opacity: 0;
+}
+
 ::selection {
   background: rgba(96, 165, 250, 0.28);
   color: #fff;
