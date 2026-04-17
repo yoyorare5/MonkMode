@@ -1,0 +1,18 @@
+{
+  "name": "Fasting Mode",
+  "short_name": "Fasting Mode",
+  "description": "Christ-centered fasting, prayer, Scripture, and daily watchfulness.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#02040a",
+  "theme_color": "#02040a",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
