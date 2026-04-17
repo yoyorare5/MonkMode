@@ -1,18 +1,30 @@
 {
   "name": "Fasting Mode",
   "short_name": "Fasting Mode",
-  "description": "Christ-centered fasting, prayer, Scripture, and daily watchfulness.",
+  "description": "Christ-centered fasting, prayer, Scripture, daily watchfulness, and synced fast records.",
   "start_url": "/",
+  "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "minimal-ui"],
   "background_color": "#02040a",
   "theme_color": "#02040a",
   "orientation": "portrait",
+  "categories": ["health", "lifestyle", "productivity"],
   "icons": [
     {
       "src": "/favicon.svg",
       "sizes": "any",
       "type": "image/svg+xml",
       "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Open today's fast",
+      "short_name": "Today",
+      "description": "Return to prayer, commitments, and the fast timer.",
+      "url": "/",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
     }
   ]
 }
