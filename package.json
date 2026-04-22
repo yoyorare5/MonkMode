@@ -6,6 +6,6 @@
   ],
   "scripts": {
     "build": "npm --prefix monk-mode-app run build",
-    "deploy:cloudflare": "npx wrangler pages deploy monk-mode-app/dist --project-name fasting-mode"
+    "deploy:cloudflare": "npx wrangler deploy"
   }
 }
