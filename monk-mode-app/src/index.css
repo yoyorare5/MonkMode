@@ -43,6 +43,14 @@ button {
   user-select: none;
 }
 
+button:focus-visible,
+input:focus-visible,
+textarea:focus-visible,
+select:focus-visible {
+  outline: 2px solid rgba(96, 165, 250, 0.55);
+  outline-offset: 2px;
+}
+
 #root {
   min-height: 100dvh;
   background: #02040a;
@@ -58,6 +66,21 @@ button {
 
 *:has(> svg.lucide-flame) > svg.lucide-flame {
   opacity: 0;
+}
+
+.command-focus {
+  position: relative;
+}
+
+.command-focus::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  z-index: -1;
+  border-radius: 29px;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.26), rgba(15, 23, 42, 0), rgba(59, 130, 246, 0.12));
+  opacity: 0.78;
+  filter: blur(12px);
 }
 
 @keyframes commandGlow {
@@ -106,6 +129,17 @@ button {
   .grid.grid-cols-3.gap-3 > div > div:first-child {
     font-size: 0.58rem;
     letter-spacing: 0.08em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
   }
 }
 
