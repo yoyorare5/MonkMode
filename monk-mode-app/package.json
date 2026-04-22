@@ -4,8 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node scripts/release-hardening.mjs && vite",
+    "build": "node scripts/release-hardening.mjs && vite build",
+    "test:smoke": "node scripts/release-hardening.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
