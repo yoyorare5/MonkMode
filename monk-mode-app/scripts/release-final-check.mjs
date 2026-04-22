@@ -19,6 +19,9 @@ const finalApp = readFileSync(appPath, "utf8");
 const required = [
   ["AlertTriangle,", "archive state icon import missing"],
   ["applyPresetToState(next, \"dailyRule\")", "onboarding preset install is not atomic"],
+  ["setStep((current) => Math.min(3, current + 1))", "onboarding Continue must use functional step navigation"],
+  ["setStep((current) => Math.max(1, current - 1))", "onboarding Back must use functional step navigation"],
+  ["window.scrollTo({ top: 0, behavior: \"smooth\" })", "onboarding step transition must reset scroll"],
   ["const deleteTodo =", "XP delete handler missing"],
   ["onDeleteTodo={deleteTodo}", "XP delete handler not wired"],
   ["Fast broken", "failed archive copy missing"],
