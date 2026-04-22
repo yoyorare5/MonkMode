@@ -7,7 +7,7 @@ self.addEventListener("activate", (event) => {
 });
 
 self.addEventListener("push", (event) => {
-  let payload = { title: "Fasting Mode", body: "Return to prayer and keep watch.", url: "/" };
+  let payload = { title: "Fasting Mode", body: "Return to prayer. Execute the next command.", url: "/" };
   if (event.data) {
     try {
       payload = { ...payload, ...event.data.json() };
@@ -23,6 +23,7 @@ self.addEventListener("push", (event) => {
       tag: payload.tag || "fasting-mode-reminder",
       data: { url: payload.url || "/" },
       requireInteraction: Boolean(payload.requireInteraction),
+      actions: payload.actions || [{ action: "open", title: "Open Fasting Mode" }],
     }),
   );
 });
