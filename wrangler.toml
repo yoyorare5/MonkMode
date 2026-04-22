@@ -1,3 +1,6 @@
 name = "fasting-mode"
 compatibility_date = "2026-04-22"
-pages_build_output_dir = "monk-mode-app/dist"
+
+[assets]
+directory = "./monk-mode-app/dist"
+not_found_handling = "single-page-application"
