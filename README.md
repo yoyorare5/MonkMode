@@ -10,12 +10,12 @@ Fasting Mode is a Vite + React app in `monk-mode-app`.
 
 ## Cloudflare Workers Hosting
 
-Cloudflare's current Workers & Pages flow can host this app as a Worker with static assets.
+Cloudflare's current Workers & Pages flow hosts this app as a Worker with static assets.
 
 Worker build settings:
 
 ```txt
-Project name: fasting-mode
+Project name: fastingmode
 Root directory: /
 Build command: npm --prefix monk-mode-app run build
 Deploy command: npx wrangler deploy
@@ -37,16 +37,16 @@ VITE_VAPID_PUBLIC_KEY
 The repo includes Cloudflare-compatible files:
 
 - `wrangler.toml` deploys `monk-mode-app/dist` through Cloudflare Workers static assets.
-- `monk-mode-app/public/_redirects` keeps hard-refresh and installed PWA routes working on static hosts.
+- `wrangler.toml` also sets `not_found_handling = "single-page-application"`, so hard refreshes work without a `_redirects` file.
 - `monk-mode-app/public/_headers` keeps security, asset cache, service worker, and manifest headers sane on static hosts that support it.
 
 After Cloudflare creates the site, add the Worker URL to Supabase Auth:
 
 ```txt
-Site URL: https://fasting-mode.youssefkareem1410.workers.dev
+Site URL: https://fastingmode.youssefkareem1410.workers.dev
 Redirect URLs:
-https://fasting-mode.youssefkareem1410.workers.dev
-https://fasting-mode.youssefkareem1410.workers.dev/*
+https://fastingmode.youssefkareem1410.workers.dev
+https://fastingmode.youssefkareem1410.workers.dev/*
 ```
 
 If you attach a custom domain, also add:
