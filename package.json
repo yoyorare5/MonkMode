@@ -1,7 +1,11 @@
 {
-  "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
-    "framer-motion": "^12.38.0",
-    "lucide-react": "^1.8.0"
+  "name": "fasting-mode",
+  "private": true,
+  "workspaces": [
+    "monk-mode-app"
+  ],
+  "scripts": {
+    "build": "npm --prefix monk-mode-app run build",
+    "deploy:cloudflare": "npx wrangler pages deploy monk-mode-app/dist --project-name fasting-mode"
   }
 }
