@@ -8,6 +8,12 @@
   text-rendering: geometricPrecision;
 }
 
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
 html {
   min-height: 100%;
   background: #02040a;
@@ -55,6 +61,7 @@ select:focus-visible {
   min-height: 100dvh;
   background: #02040a;
   isolation: isolate;
+  overflow-x: clip;
 }
 
 *:has(> svg.lucide-flame) {
@@ -97,6 +104,108 @@ select:focus-visible {
 }
 
 @media (max-width: 430px) {
+  #root main,
+  #root section,
+  #root aside,
+  #root .grid,
+  #root .grid > *,
+  #root button,
+  #root label,
+  #root select,
+  #root input,
+  #root textarea {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .sticky.top-0 {
+    margin-bottom: 0.85rem;
+  }
+
+  .sticky.top-0 > div {
+    max-width: 100%;
+    min-width: 0;
+    gap: 0.5rem;
+  }
+
+  .sticky.top-0 > div > div:first-child {
+    flex: 1 1 auto;
+    min-width: 0;
+    gap: 0.6rem;
+  }
+
+  .sticky.top-0 > div > div:first-child > div:first-child {
+    width: 2.45rem;
+    height: 2.45rem;
+    border-radius: 1rem;
+  }
+
+  .sticky.top-0 > div > div:first-child > div:last-child {
+    min-width: 0;
+    max-width: 7.6rem;
+  }
+
+  .sticky.top-0 > div > div:first-child > div:last-child > div:first-child {
+    max-width: 100%;
+    font-size: 0.72rem;
+    letter-spacing: 0.13em;
+  }
+
+  .sticky.top-0 > div > div:first-child > div:last-child > div:last-child {
+    display: none;
+  }
+
+  .sticky.top-0 span.hidden {
+    display: none !important;
+  }
+
+  .sticky.top-0 > div > div:last-child {
+    gap: 0.45rem;
+  }
+
+  .sticky.top-0 > div > div:last-child button {
+    width: 2.65rem;
+    height: 2.65rem;
+    min-height: 2.65rem;
+    border-radius: 1rem;
+  }
+
+  button.rounded-2xl.border.p-3.text-left {
+    width: 100%;
+    overflow: hidden;
+  }
+
+  button.rounded-2xl.border.p-3.text-left p,
+  button.rounded-2xl.border.p-3.text-left div,
+  p,
+  h1,
+  h2,
+  span {
+    max-width: 100%;
+    overflow-wrap: break-word;
+  }
+
+  button.rounded-2xl.border.p-3.text-left p {
+    display: -webkit-box;
+    overflow: hidden;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  nav.fixed {
+    padding-top: 0.45rem;
+  }
+
+  nav.fixed button {
+    min-height: 3.45rem;
+    border-radius: 1rem;
+  }
+
+  nav.fixed span {
+    font-size: 0.68rem;
+    letter-spacing: 0;
+  }
+
   .grid.grid-cols-3.gap-3 {
     gap: 0.5rem;
   }
@@ -122,6 +231,21 @@ select:focus-visible {
 }
 
 @media (max-width: 360px) {
+  .sticky.top-0 > div > div:first-child > div:last-child {
+    max-width: 6.7rem;
+  }
+
+  .sticky.top-0 > div > div:first-child > div:last-child > div:first-child {
+    font-size: 0.68rem;
+    letter-spacing: 0.1em;
+  }
+
+  .sticky.top-0 > div > div:last-child button {
+    width: 2.5rem;
+    height: 2.5rem;
+    min-height: 2.5rem;
+  }
+
   .grid.grid-cols-3.gap-3 > div {
     padding-inline: 0.5rem;
   }
