@@ -4,9 +4,9 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation.mjs && node scripts/release-final-check.mjs && vite",
-    "build": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation.mjs && node scripts/release-final-check.mjs && vite build",
-    "test:smoke": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation.mjs && node scripts/release-final-check.mjs",
+    "dev": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/release-final-check.mjs && vite",
+    "build": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/release-final-check.mjs && vite build",
+    "test:smoke": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/release-final-check.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
