@@ -1,0 +1,676 @@
+/* Command page mockup system. Visual-only layer for the installed app shell. */
+#root .app-topbar {
+  margin-bottom: 1.65rem !important;
+  border: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  padding-top: max(1.25rem, env(safe-area-inset-top)) !important;
+  padding-bottom: 0 !important;
+}
+
+#root .app-topbar > div {
+  max-width: 58rem !important;
+}
+
+#root .app-topbar .ui-brand-mark {
+  width: 4.35rem !important;
+  height: 4.35rem !important;
+  border-radius: 999px !important;
+  box-shadow:
+    0 0 0 1px rgba(170, 200, 255, 0.16),
+    0 0 34px rgba(46, 97, 221, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    inset 0 -14px 24px rgba(46, 97, 221, 0.24) !important;
+}
+
+#root .app-topbar .ui-brand-mark::before {
+  height: 2.35rem !important;
+  width: 0.44rem !important;
+}
+
+#root .app-topbar .ui-brand-mark::after {
+  width: 2.35rem !important;
+  height: 0.44rem !important;
+}
+
+#root .app-topbar .ui-brand-mark + div > div:first-child {
+  color: #f8fbff !important;
+  font-size: clamp(1.22rem, 4vw, 2rem) !important;
+  font-weight: 700 !important;
+  letter-spacing: 0.22em !important;
+  text-shadow: 0 14px 34px rgba(0, 0, 0, 0.8);
+}
+
+#root .app-topbar .ui-brand-mark + div > div:last-child {
+  display: none !important;
+}
+
+#root .app-topbar .ui-icon-button {
+  width: 4rem !important;
+  height: 4rem !important;
+  border-radius: 999px !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(205, 221, 255, 0.09), transparent 52%),
+    linear-gradient(180deg, rgba(10, 14, 24, 0.9), rgba(0, 1, 5, 0.98)) !important;
+  border-color: rgba(210, 225, 255, 0.18) !important;
+}
+
+.command-screen {
+  max-width: 58rem;
+  margin-inline: auto;
+  padding-inline: 0.35rem;
+}
+
+#root .command-hero-card {
+  overflow: hidden;
+  border-radius: 3.35rem !important;
+  border-color: rgba(134, 176, 255, 0.38) !important;
+  background:
+    radial-gradient(circle at 50% 46%, rgba(19, 58, 160, 0.18), transparent 31%),
+    radial-gradient(circle at 50% 74%, rgba(9, 31, 94, 0.36), transparent 28%),
+    linear-gradient(180deg, rgba(2, 5, 13, 0.99), rgba(0, 1, 5, 1)) !important;
+  box-shadow:
+    0 48px 150px rgba(0, 0, 0, 0.88),
+    0 0 70px rgba(8, 34, 112, 0.2),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.028) !important;
+}
+
+#root .command-hero-card::before {
+  content: "";
+  position: absolute;
+  inset: 37% -17% 16%;
+  pointer-events: none;
+  border-radius: 50%;
+  background:
+    radial-gradient(ellipse at center, transparent 45%, rgba(47, 102, 255, 0.24) 45.35%, rgba(47, 102, 255, 0.04) 46.2%, transparent 47.6%),
+    radial-gradient(ellipse at center, transparent 61%, rgba(210, 225, 255, 0.08) 61.2%, transparent 62.2%);
+  filter: drop-shadow(0 0 28px rgba(47, 102, 255, 0.24));
+  opacity: 0.95;
+}
+
+#root .command-hero-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.command-mode-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(0.7rem, 2.5vw, 1.4rem);
+  margin-bottom: clamp(2.25rem, 7vw, 4.25rem);
+}
+
+.command-mode-row span {
+  min-height: 4.35rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.72rem;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 225, 255, 0.16);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.075), transparent 54%),
+    linear-gradient(180deg, rgba(12, 15, 24, 0.88), rgba(0, 1, 5, 0.94));
+  color: #f4f8ff;
+  font-weight: 800;
+  letter-spacing: 0;
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.52),
+    inset 0 1px 0 rgba(255, 255, 255, 0.075);
+}
+
+.command-mode-row span.is-active {
+  border-color: rgba(102, 154, 255, 0.58);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(182, 207, 255, 0.2), transparent 54%),
+    linear-gradient(180deg, rgba(20, 59, 160, 0.86), rgba(3, 12, 45, 0.98));
+  box-shadow:
+    0 0 0 1px rgba(90, 132, 232, 0.24),
+    0 0 34px rgba(47, 102, 255, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.command-current-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 11rem);
+  gap: 1.25rem;
+  align-items: center;
+}
+
+.command-eyebrow {
+  color: #77b5ff;
+  font-size: clamp(0.78rem, 2.8vw, 1rem);
+  font-weight: 800;
+  letter-spacing: 0.42em;
+  text-transform: uppercase;
+  text-shadow: 0 0 24px rgba(47, 102, 255, 0.28);
+}
+
+.command-current-grid h1 {
+  margin-top: 1.05rem;
+  font-size: clamp(3.4rem, 12vw, 5.7rem);
+  line-height: 0.95;
+  letter-spacing: -0.035em !important;
+  color: #fff !important;
+  text-shadow: 0 20px 54px rgba(0, 0, 0, 0.9);
+}
+
+.command-current-grid p,
+.command-next-card p {
+  margin-top: 1.25rem;
+  max-width: 33rem;
+  color: #b9c3d6 !important;
+  font-size: clamp(1rem, 3.4vw, 1.4rem);
+  line-height: 1.45;
+}
+
+.command-kept-tile {
+  min-height: 11.5rem;
+  display: grid;
+  place-items: center;
+  border-radius: 2.2rem;
+  border: 1px solid rgba(210, 225, 255, 0.14);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.055), transparent 55%),
+    linear-gradient(180deg, rgba(8, 10, 17, 0.84), rgba(0, 1, 5, 0.96));
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.055), 0 20px 64px rgba(0, 0, 0, 0.48);
+}
+
+.command-kept-tile div {
+  color: #8ec4ff;
+  font-size: 0.95rem;
+  font-weight: 800;
+  letter-spacing: 0.38em;
+  text-transform: uppercase;
+}
+
+.command-kept-tile strong {
+  color: #fff;
+  font-size: clamp(3.8rem, 12vw, 5.2rem);
+  line-height: 0.9;
+}
+
+.command-time-orb {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: clamp(17rem, 46vw, 24rem);
+  margin: clamp(2.1rem, 7vw, 4rem) auto 2.15rem;
+  max-width: 42rem;
+  border-radius: 999px;
+  border: 1px solid rgba(108, 154, 255, 0.22);
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.96) 0%, rgba(1, 6, 20, 0.92) 55%, rgba(3, 16, 55, 0.54) 72%, transparent 73%),
+    linear-gradient(180deg, rgba(0, 1, 5, 0.96), rgba(0, 1, 5, 0.99));
+  box-shadow:
+    0 0 72px rgba(18, 62, 180, 0.18),
+    inset 0 0 64px rgba(9, 31, 94, 0.38),
+    inset 0 1px 0 rgba(255, 255, 255, 0.05);
+  overflow: hidden;
+}
+
+.command-time-orb::before {
+  content: "";
+  position: absolute;
+  inset: 8% 4%;
+  border-radius: 999px;
+  border-left: 4px solid rgba(47, 102, 255, 0.95);
+  border-bottom: 3px solid rgba(47, 102, 255, 0.56);
+  border-right: 1px solid rgba(105, 134, 190, 0.22);
+  border-top: 1px solid rgba(105, 134, 190, 0.08);
+  filter: drop-shadow(0 0 18px rgba(47, 102, 255, 0.72));
+}
+
+.command-time-orb::after {
+  content: "";
+  position: absolute;
+  left: 10.4%;
+  bottom: 17.8%;
+  width: 1.15rem;
+  height: 1.15rem;
+  border-radius: 999px;
+  background: #a9d8ff;
+  box-shadow: 0 0 0 4px rgba(47, 102, 255, 0.25), 0 0 30px rgba(47, 102, 255, 0.9);
+}
+
+.command-time-label {
+  color: #7ab8ff;
+  font-size: clamp(0.86rem, 3vw, 1.1rem);
+  font-weight: 800;
+  letter-spacing: 0.48em;
+  text-transform: uppercase;
+}
+
+.command-time-value {
+  margin-top: 1.1rem;
+  color: #fff;
+  font-size: clamp(3.5rem, 15vw, 6.2rem);
+  font-weight: 800;
+  line-height: 0.9;
+  letter-spacing: -0.04em;
+  text-shadow: 0 22px 60px rgba(0, 0, 0, 0.95);
+}
+
+.command-moon {
+  width: 1.75rem;
+  height: 1.75rem;
+  margin-top: 1.25rem;
+  border-radius: 999px;
+  box-shadow: inset -8px 0 0 #2f66ff;
+  filter: drop-shadow(0 0 12px rgba(47, 102, 255, 0.65));
+}
+
+.command-time-note {
+  margin-top: 1.15rem;
+  color: #aeb8ce;
+  text-align: center;
+  font-size: clamp(0.95rem, 3.4vw, 1.25rem);
+  line-height: 1.35;
+}
+
+.command-metric-strip,
+.command-score-strip {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  align-items: center;
+  gap: 0;
+  border-radius: 2rem;
+  border: 1px solid rgba(210, 225, 255, 0.16);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(88, 132, 232, 0.08), transparent 58%),
+    linear-gradient(180deg, rgba(8, 11, 19, 0.88), rgba(0, 1, 5, 0.96));
+  box-shadow: 0 24px 78px rgba(0, 0, 0, 0.58), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+.command-metric {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1rem;
+  align-items: center;
+  min-height: 7.6rem;
+  padding: 1.2rem 1.45rem;
+  border-right: 1px solid rgba(210, 225, 255, 0.12);
+}
+
+.command-metric:last-child,
+.command-score-item:last-child {
+  border-right: 0;
+}
+
+.metric-icon,
+.score-orb,
+.score-crown {
+  width: 4.25rem;
+  height: 4.25rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(98, 148, 255, 0.38);
+  background:
+    radial-gradient(circle at 50% 20%, rgba(171, 207, 255, 0.22), transparent 42%),
+    linear-gradient(180deg, rgba(10, 33, 99, 0.92), rgba(0, 1, 5, 0.98));
+  color: #9ec8ff;
+  box-shadow: 0 0 30px rgba(47, 102, 255, 0.32), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.metric-icon.is-green {
+  border-color: rgba(104, 232, 170, 0.35);
+  background: linear-gradient(180deg, rgba(8, 62, 37, 0.9), rgba(0, 1, 5, 0.98));
+  color: #8ef0bd;
+  box-shadow: 0 0 28px rgba(34, 197, 94, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+.command-metric small,
+.command-score-item small,
+.command-section-head span {
+  color: #aab4cc;
+  font-size: 0.76rem;
+  font-weight: 800;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+}
+
+.command-metric strong,
+.command-score-item strong,
+.command-section-head strong {
+  display: block;
+  margin-top: 0.35rem;
+  color: #fff;
+  font-size: clamp(1.65rem, 5vw, 2.55rem);
+  line-height: 1;
+}
+
+#root .command-score-strip {
+  border-radius: 2.6rem !important;
+  padding: 1.45rem;
+}
+
+.command-score-item {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 1.15rem;
+  align-items: center;
+  min-height: 6.75rem;
+  padding-inline: 1.15rem;
+  border-right: 1px solid rgba(210, 225, 255, 0.13);
+}
+
+.score-orb {
+  border-color: rgba(119, 116, 255, 0.52);
+  background: linear-gradient(180deg, rgba(35, 43, 158, 0.94), rgba(0, 1, 5, 0.98));
+  color: #d6d8ff;
+  box-shadow: 0 0 34px rgba(85, 80, 255, 0.38), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+.score-bars {
+  width: 4.25rem;
+  height: 4.25rem;
+  display: flex;
+  align-items: end;
+  justify-content: center;
+  gap: 0.34rem;
+}
+
+.score-bars i {
+  width: 0.44rem;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #75dbff, #2455d6);
+  box-shadow: 0 0 14px rgba(75, 190, 255, 0.48);
+}
+
+.score-bars i:nth-child(1) { height: 1.25rem; }
+.score-bars i:nth-child(2) { height: 2rem; }
+.score-bars i:nth-child(3) { height: 2.85rem; }
+
+.score-crown {
+  border-color: rgba(231, 189, 115, 0.5);
+  background: linear-gradient(180deg, rgba(76, 51, 7, 0.88), rgba(0, 1, 5, 0.98));
+  color: #ffd36f;
+  box-shadow: 0 0 32px rgba(231, 189, 115, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.09);
+}
+
+#root .command-next-card,
+#root .command-covenant-panel,
+#root .command-execute-panel {
+  border-radius: 2.35rem !important;
+}
+
+.command-next-icon {
+  width: 3.2rem;
+  height: 3.2rem;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(111, 158, 255, 0.34);
+  background: linear-gradient(180deg, rgba(20, 59, 160, 0.82), rgba(0, 1, 5, 0.96));
+  color: #dce8ff;
+  box-shadow: 0 0 26px rgba(47, 102, 255, 0.25);
+}
+
+.command-next-card h2,
+.command-section-head h2,
+.command-xp-row h3 {
+  margin: 0.35rem 0 0;
+  color: #fff !important;
+  font-weight: 800;
+}
+
+.command-layer-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.08fr) minmax(0, 0.92fr);
+  gap: 1.2rem;
+}
+
+.command-section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.command-rule-row,
+.command-xp-row,
+.command-send-row {
+  width: 100%;
+  min-height: 4.2rem;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(210, 225, 255, 0.12);
+  background: linear-gradient(180deg, rgba(7, 10, 18, 0.8), rgba(0, 1, 5, 0.92));
+  color: #eef4ff;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.command-rule-row:disabled {
+  opacity: 0.75;
+}
+
+.command-rule-row.is-kept {
+  border-color: rgba(117, 170, 255, 0.35);
+  background: linear-gradient(180deg, rgba(18, 52, 138, 0.38), rgba(0, 1, 5, 0.94));
+}
+
+.rule-check,
+.command-xp-row button {
+  width: 2.35rem;
+  height: 2.35rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(117, 170, 255, 0.28);
+  background: rgba(5, 12, 31, 0.8);
+  color: #99c3ff;
+  font-weight: 800;
+}
+
+.command-xp-row h3 {
+  font-size: 1rem;
+}
+
+.command-xp-row p {
+  margin-top: 0.25rem;
+  color: #919db5;
+  font-size: 0.82rem;
+}
+
+.command-xp-row > span {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid rgba(117, 170, 255, 0.2);
+  background: rgba(10, 33, 99, 0.36);
+  color: #cfe0ff;
+  padding: 0.42rem 0.7rem;
+  font-size: 0.74rem;
+  font-weight: 800;
+}
+
+.command-empty-state {
+  border-radius: 1.55rem;
+  border: 1px dashed rgba(210, 225, 255, 0.16);
+  background: rgba(0, 1, 5, 0.46);
+  color: #aeb8ce;
+  padding: 1.1rem;
+  text-align: center;
+}
+
+.command-empty-state svg {
+  margin-inline: auto;
+  color: #9bbdff;
+}
+
+.command-send-row {
+  min-height: 3.4rem;
+  justify-content: center;
+  color: #b9c8e8;
+}
+
+/* Apply the command mockup surface language to the rest of the app. */
+#root .screen-title {
+  max-width: 58rem;
+  margin-inline: auto;
+}
+
+#root .screen-title h1 {
+  font-size: clamp(2.2rem, 8vw, 4rem) !important;
+  letter-spacing: -0.035em !important;
+}
+
+#root .xp-task-card,
+#root .xp-task-editor,
+#root .ui-stat,
+#root .time-capsule,
+#root .ui-danger-meter {
+  border-radius: 1.85rem !important;
+}
+
+#root .ui-bottom-nav {
+  padding-top: 1rem !important;
+}
+
+#root .native-tabbar-inner {
+  max-width: 56rem !important;
+  border-radius: 2.35rem !important;
+  padding: 0.7rem !important;
+}
+
+#root .native-tab {
+  min-height: 5.15rem !important;
+  border-radius: 1.9rem !important;
+  font-size: clamp(0.72rem, 2.7vw, 0.96rem) !important;
+}
+
+#root .native-tab.is-active {
+  box-shadow:
+    0 0 0 1px rgba(150, 188, 255, 0.22),
+    0 0 44px rgba(47, 102, 255, 0.34),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+@media (max-width: 700px) {
+  #root .app-topbar .ui-brand-mark {
+    width: 3.65rem !important;
+    height: 3.65rem !important;
+  }
+
+  #root .app-topbar .ui-brand-mark + div > div:first-child {
+    font-size: clamp(1.05rem, 5vw, 1.35rem) !important;
+    letter-spacing: 0.18em !important;
+  }
+
+  #root .app-topbar .ui-icon-button {
+    width: 3.25rem !important;
+    height: 3.25rem !important;
+  }
+
+  .command-mode-row {
+    gap: 0.65rem;
+  }
+
+  .command-mode-row span {
+    min-height: 3.7rem;
+    padding-inline: 0.62rem;
+    font-size: 0.9rem;
+  }
+
+  .command-current-grid {
+    grid-template-columns: minmax(0, 1fr) minmax(6rem, 8rem);
+  }
+
+  .command-kept-tile {
+    min-height: 9.4rem;
+    border-radius: 1.65rem;
+  }
+
+  .command-metric,
+  .command-score-item {
+    grid-template-columns: 1fr;
+    justify-items: center;
+    text-align: center;
+    gap: 0.55rem;
+    padding: 1rem 0.65rem;
+  }
+
+  .metric-icon,
+  .score-orb,
+  .score-crown,
+  .score-bars {
+    width: 3.45rem;
+    height: 3.45rem;
+  }
+
+  .command-layer-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 430px) {
+  .command-screen {
+    padding-inline: 0;
+  }
+
+  #root .command-hero-card {
+    border-radius: 2.25rem !important;
+    padding: 1rem !important;
+  }
+
+  .command-mode-row {
+    grid-template-columns: 1fr;
+    margin-bottom: 2rem;
+  }
+
+  .command-mode-row span {
+    min-height: 3.3rem;
+  }
+
+  .command-current-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .command-kept-tile {
+    min-height: 7rem;
+    grid-template-columns: 1fr auto;
+    padding-inline: 1.25rem;
+  }
+
+  .command-time-orb {
+    min-height: 16rem;
+    margin-block: 2rem 1.4rem;
+  }
+
+  .command-time-orb::after {
+    left: 10%;
+    bottom: 18%;
+  }
+
+  .command-metric-strip,
+  .command-score-strip {
+    border-radius: 1.65rem;
+  }
+
+  .command-metric small,
+  .command-score-item small {
+    letter-spacing: 0.16em;
+    font-size: 0.66rem;
+  }
+
+  .command-metric strong,
+  .command-score-item strong {
+    font-size: 1.6rem;
+  }
+
+  #root .native-tabbar-inner {
+    border-radius: 2rem !important;
+    padding: 0.45rem !important;
+  }
+
+  #root .native-tab {
+    min-height: 4.55rem !important;
+    border-radius: 1.45rem !important;
+  }
+}
