@@ -50,6 +50,12 @@ const required = [
   ["\"Command\", Target", "command tab label missing"],
   ["\"Execute\", Database", "execute tab label missing"],
   ["\"OS\", Sparkles", "OS tab label missing"],
+  ["execute-screen", "execute mockup screen missing"],
+  ["plan-screen", "plan mockup screen missing"],
+  ["rewards-screen", "OS mockup screen missing"],
+  ["settings-screen", "settings mockup screen missing"],
+  ["System settings", "settings mockup title missing"],
+  ["Lock tomorrow", "plan lock ritual missing"],
 ];
 
 for (const [needle, message] of required) {
