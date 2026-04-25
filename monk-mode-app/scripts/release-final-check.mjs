@@ -43,6 +43,13 @@ const required = [
   ["native-tabbar", "native bottom nav visual marker missing"],
   ["fluid-commitment-panel", "strict commitment visual hierarchy missing"],
   ["xp-task-card", "XP task visual polish missing"],
+  ["command-hero-card", "mockup command hero missing"],
+  ["command-time-orb", "mockup command timer missing"],
+  ["command-metric-strip", "mockup command metrics missing"],
+  ["command-score-strip", "mockup command score strip missing"],
+  ["\"Command\", Target", "command tab label missing"],
+  ["\"Execute\", Database", "execute tab label missing"],
+  ["\"OS\", Sparkles", "OS tab label missing"],
 ];
 
 for (const [needle, message] of required) {
