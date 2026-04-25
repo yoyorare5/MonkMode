@@ -1,0 +1,397 @@
+/* Remaining screen mockup layer: fixes bottom scroll clearance and aligns all tabs with the command page. */
+html,
+body,
+#root {
+  min-height: 100%;
+  background: #000;
+}
+
+#root main {
+  padding-bottom: calc(190px + env(safe-area-inset-bottom)) !important;
+  scroll-padding-bottom: calc(190px + env(safe-area-inset-bottom));
+}
+
+#root .ui-shell {
+  min-height: 100dvh;
+  background: #000 !important;
+}
+
+#root .ui-shell-glow::after {
+  content: "";
+  position: fixed;
+  inset: auto 0 0;
+  height: 34vh;
+  pointer-events: none;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.86) 58%, #000 100%);
+  z-index: 0;
+}
+
+#root .mock-screen {
+  max-width: 58rem;
+  margin-inline: auto;
+  padding-inline: 0.35rem;
+  padding-bottom: calc(3rem + env(safe-area-inset-bottom));
+  position: relative;
+  z-index: 1;
+}
+
+#root .mock-hero,
+#root .mock-card {
+  position: relative;
+  overflow: hidden;
+  border: 1px solid rgba(190, 215, 255, 0.17) !important;
+  background:
+    radial-gradient(circle at 50% -16%, rgba(33, 76, 180, 0.2), transparent 42%),
+    radial-gradient(circle at 100% 100%, rgba(72, 103, 180, 0.07), transparent 34%),
+    linear-gradient(180deg, rgba(4, 8, 18, 0.98), rgba(0, 1, 5, 1)) !important;
+  box-shadow:
+    0 42px 130px rgba(0, 0, 0, 0.86),
+    0 0 54px rgba(10, 33, 99, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+}
+
+#root .mock-hero {
+  border-radius: 3.1rem !important;
+  min-height: 17rem;
+}
+
+#root .mock-hero::before {
+  content: "";
+  position: absolute;
+  inset: 28% -18% -28%;
+  border-radius: 999px;
+  background:
+    radial-gradient(ellipse at center, transparent 48%, rgba(47, 102, 255, 0.2) 48.4%, rgba(47, 102, 255, 0.04) 49.2%, transparent 51.5%),
+    radial-gradient(ellipse at center, rgba(9, 31, 94, 0.22), transparent 62%);
+  filter: drop-shadow(0 0 32px rgba(47, 102, 255, 0.18));
+  opacity: 0.86;
+}
+
+#root .mock-hero > *,
+#root .mock-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+#root .mock-card {
+  border-radius: 2.35rem !important;
+}
+
+#root .mock-hero-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+#root .mock-orb,
+#root .mock-mini-orb {
+  display: inline-grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(111, 158, 255, 0.32);
+  background:
+    radial-gradient(circle at 50% 18%, rgba(170, 200, 255, 0.2), transparent 43%),
+    linear-gradient(180deg, rgba(10, 33, 99, 0.82), rgba(0, 1, 5, 0.98));
+  color: #dce8ff;
+  box-shadow: 0 0 32px rgba(47, 102, 255, 0.26), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+#root .mock-orb {
+  width: 4.15rem;
+  height: 4.15rem;
+}
+
+#root .mock-mini-orb {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 auto;
+  font-size: 0.72rem;
+  font-weight: 900;
+}
+
+#root .mock-hero h1 {
+  margin-top: 1.55rem;
+  color: #fff;
+  font-size: clamp(3rem, 12vw, 5.5rem);
+  line-height: 0.94;
+  letter-spacing: -0.04em !important;
+  text-shadow: 0 22px 60px rgba(0, 0, 0, 0.94);
+}
+
+#root .mock-hero p,
+#root .screen-copy {
+  margin-top: 1rem;
+  max-width: 38rem;
+  color: #c2cada !important;
+  font-size: clamp(1rem, 3.4vw, 1.22rem);
+  line-height: 1.48;
+}
+
+#root .mock-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.1rem;
+}
+
+#root .mock-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 0.8rem;
+}
+
+#root .mock-stat-grid .ui-stat,
+#root .mock-card .ui-stat {
+  min-height: 6.4rem;
+  border-radius: 1.65rem !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(112, 154, 255, 0.12), transparent 56%),
+    linear-gradient(180deg, rgba(7, 10, 18, 0.82), rgba(0, 1, 5, 0.95)) !important;
+}
+
+#root .screen-mock-row,
+#root .screen-select-row,
+#root .screen-check-row {
+  width: 100%;
+  min-height: 4.35rem;
+  display: flex;
+  align-items: center;
+  gap: 0.95rem;
+  border-radius: 1.55rem;
+  border: 1px solid rgba(210, 225, 255, 0.12);
+  background:
+    radial-gradient(circle at 50% -25%, rgba(255, 255, 255, 0.055), transparent 58%),
+    linear-gradient(180deg, rgba(7, 10, 18, 0.8), rgba(0, 1, 5, 0.94));
+  color: #eef4ff;
+  padding: 0.9rem 1rem;
+  text-align: left;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+#root .screen-select-row,
+#root .screen-check-row {
+  cursor: pointer;
+  transition: transform 180ms ease, border-color 180ms ease, background 180ms ease, box-shadow 180ms ease;
+}
+
+#root .screen-select-row:active,
+#root .screen-check-row:active,
+#root .screen-mock-row button:active {
+  transform: scale(0.985);
+}
+
+#root .screen-select-row.is-selected,
+#root .screen-check-row.is-done {
+  border-color: rgba(123, 162, 255, 0.34);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(47, 102, 255, 0.16), transparent 58%),
+    linear-gradient(180deg, rgba(17, 49, 138, 0.28), rgba(0, 1, 5, 0.95));
+  box-shadow: 0 0 28px rgba(17, 49, 138, 0.14), inset 0 1px 0 rgba(255, 255, 255, 0.06);
+}
+
+#root .screen-mock-row button,
+#root .screen-select-row > span,
+#root .screen-check-row > span {
+  width: 2.4rem;
+  height: 2.4rem;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  border: 1px solid rgba(117, 170, 255, 0.28);
+  background: rgba(5, 12, 31, 0.84);
+  color: #a7c9ff;
+}
+
+#root .screen-mock-row div,
+#root .screen-select-row div {
+  min-width: 0;
+  flex: 1 1 auto;
+}
+
+#root .screen-mock-row h3,
+#root .screen-select-row h3,
+#root .screen-check-block h3 {
+  color: #fff;
+  font-weight: 800;
+  line-height: 1.15;
+}
+
+#root .screen-mock-row p,
+#root .screen-select-row p {
+  margin-top: 0.25rem;
+  color: #9aa6bc;
+  font-size: 0.82rem;
+}
+
+#root .screen-mock-row > span:not(.mock-mini-orb) {
+  flex: 0 0 auto;
+  border-radius: 999px;
+  border: 1px solid rgba(117, 170, 255, 0.18);
+  background: rgba(10, 33, 99, 0.32);
+  color: #d4e3ff;
+  padding: 0.42rem 0.72rem;
+  font-size: 0.73rem;
+  font-weight: 900;
+}
+
+#root .screen-empty {
+  border-radius: 1.65rem;
+  border: 1px dashed rgba(210, 225, 255, 0.16);
+  background: rgba(0, 1, 5, 0.5);
+  color: #aeb8ce;
+  padding: 1.2rem;
+  text-align: center;
+}
+
+#root .screen-check-block {
+  border-radius: 1.8rem;
+  border: 1px solid rgba(210, 225, 255, 0.1);
+  background: rgba(0, 1, 5, 0.42);
+  padding: 1rem;
+}
+
+#root .screen-check-block h3 {
+  margin-bottom: 0.85rem;
+}
+
+#root .screen-check-row {
+  min-height: 3.65rem;
+  margin-top: 0.65rem;
+  color: #dbe6f8;
+  font-weight: 700;
+}
+
+#root .screen-progress {
+  height: 0.9rem;
+  overflow: hidden;
+  border-radius: 999px;
+  border: 1px solid rgba(210, 225, 255, 0.12);
+  background: rgba(0, 1, 5, 0.72);
+  box-shadow: inset 0 1px 6px rgba(0, 0, 0, 0.6);
+}
+
+#root .screen-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #0b2163, #2455d6, #8db4ff);
+  box-shadow: 0 0 22px rgba(47, 102, 255, 0.42);
+}
+
+#root .ui-input,
+#root .ui-textarea,
+#root .ui-select {
+  border-color: rgba(210, 225, 255, 0.13) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.045), transparent 58%),
+    linear-gradient(180deg, rgba(7, 10, 18, 0.82), rgba(0, 1, 5, 0.94)) !important;
+  color: #f7fbff !important;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.04) !important;
+}
+
+#root .ui-button,
+#root button.ui-button {
+  min-height: 3.25rem;
+  border-radius: 999px !important;
+}
+
+#root .settings-signout {
+  min-height: 3.5rem;
+  margin-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+  border-radius: 999px !important;
+}
+
+#root .ui-bottom-nav {
+  background: linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.78) 22%, #000 100%) !important;
+  padding-bottom: max(0.8rem, env(safe-area-inset-bottom)) !important;
+}
+
+#root .native-tabbar-inner {
+  background:
+    radial-gradient(circle at 50% -30%, rgba(87, 132, 232, 0.12), transparent 52%),
+    linear-gradient(180deg, rgba(6, 10, 18, 0.92), rgba(0, 1, 5, 0.98)) !important;
+  border-color: rgba(210, 225, 255, 0.16) !important;
+  box-shadow:
+    0 28px 90px rgba(0, 0, 0, 0.84),
+    0 0 32px rgba(17, 49, 138, 0.14),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+#root .native-tab:not(.is-active) {
+  color: #9aa6bc !important;
+}
+
+@media (max-width: 700px) {
+  #root main {
+    padding-bottom: calc(215px + env(safe-area-inset-bottom)) !important;
+  }
+
+  #root .mock-grid {
+    grid-template-columns: 1fr;
+  }
+
+  #root .mock-hero {
+    border-radius: 2.45rem !important;
+    min-height: 15rem;
+  }
+
+  #root .mock-card {
+    border-radius: 2rem !important;
+  }
+
+  #root .mock-orb {
+    width: 3.45rem;
+    height: 3.45rem;
+  }
+
+  #root .mock-stat-grid {
+    gap: 0.65rem;
+  }
+
+  #root .mock-stat-grid .ui-stat {
+    min-height: 5.4rem;
+    padding: 0.85rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  #root .mock-screen {
+    padding-inline: 0;
+  }
+
+  #root .mock-hero h1 {
+    font-size: clamp(2.55rem, 12vw, 3.65rem);
+  }
+
+  #root .mock-hero p,
+  #root .screen-copy {
+    font-size: 0.98rem;
+  }
+
+  #root .mock-stat-grid .ui-stat [class*="text-2xl"],
+  #root .mock-stat-grid .ui-stat [class*="text-3xl"] {
+    font-size: 1.45rem !important;
+  }
+
+  #root .screen-mock-row,
+  #root .screen-select-row {
+    min-height: 4rem;
+    gap: 0.75rem;
+    padding: 0.78rem 0.85rem;
+  }
+
+  #root .screen-mock-row p,
+  #root .screen-select-row p {
+    font-size: 0.76rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  #root .screen-select-row,
+  #root .screen-check-row,
+  #root .screen-mock-row button {
+    transition: none !important;
+  }
+}
