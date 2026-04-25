@@ -1,0 +1,519 @@
+/* Final mockup alignment layer. Loaded after index.css; visual only. */
+:root {
+  --obsidian-1000: #000000;
+  --obsidian-990: #000103;
+  --obsidian-970: #01030a;
+  --ink-panel: rgba(2, 4, 10, 0.94);
+  --ink-panel-deep: rgba(0, 1, 5, 0.98);
+  --mockup-blue: #336dff;
+  --mockup-blue-hot: #73a0ff;
+  --mockup-blue-soft: #c6dcff;
+  --mockup-gold: #e7bd73;
+  --mockup-violet: #d07dff;
+  --mockup-red: #ff6f86;
+  --mockup-text: #f8fbff;
+  --mockup-secondary: #c9d2e4;
+  --mockup-muted: #8390aa;
+}
+
+html,
+body,
+#root {
+  background: #000 !important;
+}
+
+#root .ui-shell,
+#root .min-h-dvh {
+  background-color: #000 !important;
+}
+
+#root .ui-shell-glow {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(35, 86, 231, 0.18), transparent 26%),
+    radial-gradient(circle at 50% 42%, rgba(37, 99, 235, 0.10), transparent 28%),
+    radial-gradient(circle at 100% 10%, rgba(231, 189, 115, 0.035), transparent 22%),
+    linear-gradient(180deg, #000 0%, #010209 42%, #000 100%) !important;
+}
+
+#root [class*="text-slate-300"],
+#root [class*="text-slate-400"] {
+  color: var(--mockup-secondary) !important;
+}
+
+#root [class*="text-slate-500"],
+#root [class*="text-slate-600"] {
+  color: var(--mockup-muted) !important;
+}
+
+#root h1,
+#root h2,
+#root h3,
+#root .screen-title h1 {
+  color: var(--mockup-text) !important;
+  text-shadow: 0 16px 48px rgba(0, 0, 0, 0.7);
+}
+
+#root .ui-panel,
+#root .fluid-panel,
+#root .os-panel,
+#root .os-command,
+#root .xp-task-card,
+#root .ui-stat,
+#root .ui-danger-meter,
+#root .time-capsule {
+  border-color: rgba(190, 210, 255, 0.14) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(75, 121, 255, 0.075), transparent 42%),
+    linear-gradient(180deg, rgba(8, 11, 20, 0.94), rgba(0, 1, 5, 0.98)) !important;
+  box-shadow:
+    0 34px 110px rgba(0, 0, 0, 0.78),
+    0 0 34px rgba(35, 86, 231, 0.055),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+#root .ui-command-card,
+#root .os-command {
+  border-color: rgba(144, 176, 255, 0.28) !important;
+  background:
+    radial-gradient(circle at 50% -12%, rgba(85, 128, 255, 0.26), transparent 44%),
+    radial-gradient(circle at 100% 100%, rgba(231, 189, 115, 0.07), transparent 36%),
+    linear-gradient(180deg, rgba(7, 13, 29, 0.98), rgba(0, 1, 5, 1)) !important;
+  box-shadow:
+    0 42px 140px rgba(0, 0, 0, 0.84),
+    0 0 60px rgba(51, 109, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+#root .ui-button.bg-blue-600,
+#root .auth-primary {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(207, 226, 255, 0.46), transparent 48%),
+    linear-gradient(180deg, #5e8dff 0%, #2863f7 50%, #14399a 100%) !important;
+  border-color: rgba(206, 224, 255, 0.42) !important;
+  box-shadow:
+    0 22px 58px rgba(35, 86, 231, 0.42),
+    0 0 34px rgba(96, 147, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.28) !important;
+  color: #fff !important;
+}
+
+#root .ui-button[class*="bg-white"],
+#root .auth-local,
+#root .ui-icon-button,
+#root .auth-sound {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(144, 176, 255, 0.11), transparent 60%),
+    linear-gradient(180deg, rgba(14, 18, 31, 0.82), rgba(0, 1, 5, 0.94)) !important;
+  border-color: rgba(195, 213, 255, 0.14) !important;
+  color: #d8e3f8 !important;
+}
+
+#root .ui-input,
+#root .premium-input,
+#root .ui-select {
+  background:
+    linear-gradient(180deg, rgba(7, 10, 18, 0.92), rgba(0, 1, 5, 0.96)) !important;
+  border-color: rgba(195, 213, 255, 0.13) !important;
+  color: #fbfdff !important;
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    0 14px 36px rgba(0, 0, 0, 0.42) !important;
+}
+
+#root .ui-input:focus,
+#root .premium-input:focus,
+#root .ui-select:focus {
+  border-color: rgba(125, 165, 255, 0.58) !important;
+  box-shadow:
+    0 0 0 4px rgba(51, 109, 255, 0.14),
+    0 0 24px rgba(51, 109, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Auth page: closer to the provided cinematic mockup. */
+#root .auth-shell {
+  border-color: rgba(220, 232, 255, 0.08) !important;
+  background:
+    radial-gradient(circle at 50% 39%, rgba(25, 59, 153, 0.26), transparent 28%),
+    radial-gradient(circle at 50% 52%, rgba(51, 109, 255, 0.16), transparent 25%),
+    radial-gradient(circle at 50% 80%, rgba(231, 189, 115, 0.04), transparent 22%),
+    linear-gradient(180deg, #02040a 0%, #01030a 34%, #000 100%) !important;
+  box-shadow:
+    0 48px 160px rgba(0, 0, 0, 0.92),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.025) !important;
+}
+
+#root .auth-shell::before {
+  inset: 22% -28% 18% !important;
+  background:
+    radial-gradient(ellipse at center, transparent 41%, rgba(96, 147, 255, 0.26) 41.35%, rgba(96, 147, 255, 0.06) 42.15%, transparent 43.3%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(231, 189, 115, 0.14) 55.25%, transparent 56.4%),
+    radial-gradient(ellipse at center, transparent 67%, rgba(80, 112, 180, 0.08) 67.25%, transparent 68.2%) !important;
+  opacity: 0.88 !important;
+  filter: drop-shadow(0 0 28px rgba(51, 109, 255, 0.16));
+}
+
+#root .auth-shell::after {
+  content: "";
+  position: absolute;
+  left: -16%;
+  right: -16%;
+  bottom: 21%;
+  height: 27%;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse at 50% 100%, rgba(0, 0, 0, 0.98) 0%, rgba(0, 0, 0, 0.96) 35%, transparent 70%),
+    linear-gradient(180deg, transparent 0%, rgba(0, 0, 0, 0.74) 84%, rgba(0, 0, 0, 0.98) 100%);
+  opacity: 0.72;
+}
+
+#root .auth-logo,
+#root .auth-core {
+  border-color: rgba(155, 185, 255, 0.24) !important;
+  background-image:
+    url("/favicon.svg"),
+    radial-gradient(circle at 50% 24%, rgba(147, 197, 253, 0.32), transparent 48%),
+    radial-gradient(circle at 50% 76%, rgba(51, 109, 255, 0.34), transparent 42%),
+    linear-gradient(180deg, rgba(7, 15, 35, 0.95), rgba(0, 1, 5, 1)) !important;
+  background-size: 77%, auto, auto, auto !important;
+  box-shadow:
+    0 0 0 8px rgba(51, 109, 255, 0.045),
+    0 0 34px rgba(71, 119, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -12px 26px rgba(51, 109, 255, 0.22) !important;
+}
+
+#root .auth-kicker {
+  border-color: rgba(110, 154, 255, 0.36) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(51, 109, 255, 0.24), transparent 42%),
+    linear-gradient(180deg, rgba(10, 17, 34, 0.92), rgba(1, 3, 8, 0.94)) !important;
+  color: #dce8ff !important;
+  box-shadow:
+    0 16px 38px rgba(0, 0, 0, 0.44),
+    0 0 24px rgba(51, 109, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+#root .auth-title {
+  color: #ffffff !important;
+  text-shadow:
+    0 2px 0 rgba(255, 255, 255, 0.08),
+    0 20px 54px rgba(0, 0, 0, 0.9);
+}
+
+#root .auth-title .block {
+  background: linear-gradient(180deg, #a9c9ff 0%, #4d7cff 42%, #1f5cff 78%, #1644c7 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  color: transparent !important;
+  filter: drop-shadow(0 16px 34px rgba(51, 109, 255, 0.24));
+}
+
+#root .auth-shell p {
+  color: #d4dceb !important;
+}
+
+#root .auth-bg-orb-one {
+  background: rgba(51, 109, 255, 0.18) !important;
+  filter: blur(32px) !important;
+}
+
+#root .auth-bg-orb-two {
+  background: rgba(231, 189, 115, 0.07) !important;
+  filter: blur(36px) !important;
+}
+
+#root .auth-orbit {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 36%, rgba(8, 21, 55, 0.92) 42%, rgba(51, 109, 255, 0.28) 48%, transparent 61%) !important;
+  border-color: rgba(97, 144, 255, 0.38) !important;
+  box-shadow:
+    0 0 82px rgba(51, 109, 255, 0.28),
+    inset 0 0 58px rgba(29, 78, 216, 0.28),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.055) !important;
+}
+
+#root .auth-orbit-two {
+  border-color: rgba(206, 224, 255, 0.18) !important;
+  box-shadow:
+    0 0 52px rgba(51, 109, 255, 0.12),
+    inset 0 0 36px rgba(51, 109, 255, 0.16) !important;
+}
+
+#root .auth-core {
+  background-size: 72%, auto, auto, auto !important;
+  box-shadow:
+    0 0 0 8px rgba(0, 0, 0, 0.46),
+    0 0 0 15px rgba(51, 109, 255, 0.055),
+    0 0 54px rgba(51, 109, 255, 0.34),
+    inset 0 -16px 28px rgba(51, 109, 255, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+#root .auth-panel {
+  border-color: rgba(170, 197, 255, 0.3) !important;
+  background:
+    radial-gradient(circle at 0% 0%, rgba(144, 176, 255, 0.18), transparent 32%),
+    radial-gradient(circle at 100% 100%, rgba(231, 189, 115, 0.14), transparent 34%),
+    linear-gradient(180deg, rgba(15, 21, 35, 0.92), rgba(0, 1, 5, 0.99)) !important;
+  box-shadow:
+    0 34px 120px rgba(0, 0, 0, 0.84),
+    0 0 54px rgba(51, 109, 255, 0.16),
+    0 0 26px rgba(231, 189, 115, 0.06),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+#root .auth-toggle {
+  background: rgba(0, 1, 5, 0.72) !important;
+  border-color: rgba(210, 225, 255, 0.13) !important;
+}
+
+#root .auth-toggle .is-active {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(148, 183, 255, 0.26), transparent 58%),
+    linear-gradient(180deg, rgba(31, 67, 138, 0.88), rgba(4, 8, 18, 0.98)) !important;
+  box-shadow:
+    0 16px 42px rgba(51, 109, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+#root .auth-pillar {
+  border-color: rgba(186, 204, 244, 0.12) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(120, 166, 255, 0.08), transparent 60%),
+    linear-gradient(180deg, rgba(8, 12, 23, 0.72), rgba(0, 1, 5, 0.88)) !important;
+  box-shadow:
+    0 18px 54px rgba(0, 0, 0, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.055) !important;
+}
+
+#root .auth-pillar > div:first-child {
+  border-color: rgba(199, 218, 255, 0.38) !important;
+  background:
+    radial-gradient(circle at 50% 25%, rgba(222, 235, 255, 0.22), transparent 44%),
+    linear-gradient(180deg, rgba(4, 8, 18, 0.92), rgba(0, 1, 5, 0.98)) !important;
+  box-shadow:
+    0 0 26px rgba(51, 109, 255, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#root .auth-pillar:nth-child(1) > div:first-child {
+  color: #dbeafe !important;
+  box-shadow: 0 0 28px rgba(51, 109, 255, 0.22), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#root .auth-pillar:nth-child(2) > div:first-child {
+  color: #f8d795 !important;
+  border-color: rgba(231, 189, 115, 0.42) !important;
+  box-shadow: 0 0 28px rgba(231, 189, 115, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#root .auth-pillar:nth-child(3) > div:first-child {
+  color: #dfb2ff !important;
+  border-color: rgba(208, 125, 255, 0.42) !important;
+  box-shadow: 0 0 28px rgba(208, 125, 255, 0.2), inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#root .auth-pillar:nth-child(4) {
+  border-color: rgba(255, 111, 134, 0.18) !important;
+}
+
+#root .auth-pillar:nth-child(4) > div:first-child,
+#root .auth-pillar:nth-child(4) *:has(> svg.lucide-flame) {
+  background-image:
+    radial-gradient(circle at 50% 25%, rgba(255, 205, 214, 0.28), transparent 44%),
+    radial-gradient(circle at 50% 78%, rgba(255, 111, 134, 0.24), transparent 48%),
+    linear-gradient(180deg, rgba(22, 5, 12, 0.96), rgba(0, 1, 5, 0.98)) !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: auto !important;
+  border-color: rgba(255, 111, 134, 0.46) !important;
+  color: #ff8ca1 !important;
+  box-shadow:
+    0 0 30px rgba(255, 111, 134, 0.24),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1) !important;
+}
+
+#root .auth-pillar:nth-child(4) svg.lucide-flame {
+  opacity: 1 !important;
+  color: #ff8ca1 !important;
+  filter: drop-shadow(0 0 10px rgba(255, 111, 134, 0.42));
+}
+
+#root .auth-pillar:nth-child(4) div:nth-child(2) {
+  color: #fff1f4 !important;
+}
+
+/* Fasting core and XP layer contrast. */
+#root .ui-commitment-panel,
+#root .fluid-commitment-panel {
+  border-color: rgba(144, 176, 255, 0.36) !important;
+  background:
+    radial-gradient(circle at 50% -18%, rgba(96, 147, 255, 0.24), transparent 42%),
+    linear-gradient(180deg, rgba(5, 11, 24, 0.99), rgba(0, 1, 5, 1)) !important;
+  box-shadow:
+    0 44px 140px rgba(0, 0, 0, 0.86),
+    0 0 56px rgba(51, 109, 255, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+#root .ui-commitment-card {
+  border-color: rgba(210, 225, 255, 0.12) !important;
+  background: linear-gradient(180deg, rgba(9, 13, 24, 0.82), rgba(0, 1, 5, 0.94)) !important;
+}
+
+#root .ui-commitment-card.is-kept {
+  border-color: rgba(128, 168, 255, 0.42) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(144, 176, 255, 0.2), transparent 56%),
+    linear-gradient(180deg, rgba(31, 76, 178, 0.3), rgba(2, 5, 14, 0.96)) !important;
+  box-shadow:
+    0 18px 50px rgba(51, 109, 255, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+}
+
+#root .xp-task-card {
+  border-color: rgba(210, 225, 255, 0.09) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(144, 176, 255, 0.045), transparent 44%),
+    linear-gradient(180deg, rgba(7, 10, 18, 0.86), rgba(0, 1, 5, 0.94)) !important;
+}
+
+#root .xp-task-card h3,
+#root .xp-task-card .font-semibold {
+  color: #f5f8ff !important;
+}
+
+#root .ui-badge {
+  border-color: rgba(210, 225, 255, 0.11) !important;
+  background: rgba(0, 1, 5, 0.56) !important;
+  color: #bdc8dd !important;
+}
+
+#root .ui-danger-critical,
+#root .ui-danger-danger {
+  box-shadow:
+    0 34px 110px rgba(0, 0, 0, 0.78),
+    0 0 42px rgba(239, 68, 68, 0.12),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+/* Native bottom nav: more mockup-like black material and clearer active contrast. */
+#root .ui-bottom-nav,
+#root .native-tabbar {
+  background:
+    linear-gradient(180deg, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.96) 34%, #000 100%) !important;
+}
+
+#root .native-tabbar-inner {
+  border-color: rgba(200, 218, 255, 0.12) !important;
+  background:
+    radial-gradient(circle at 50% 0%, rgba(95, 135, 255, 0.08), transparent 62%),
+    rgba(0, 1, 5, 0.86) !important;
+  box-shadow:
+    0 -18px 70px rgba(0, 0, 0, 0.82),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06) !important;
+}
+
+#root .native-tab.is-active,
+#root .ui-bottom-tab.is-active {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(218, 232, 255, 0.34), transparent 58%),
+    linear-gradient(180deg, #5d88ff 0%, #2f66ff 56%, #1748d1 100%) !important;
+  color: #fff !important;
+  box-shadow:
+    0 16px 38px rgba(47, 102, 255, 0.38),
+    0 0 22px rgba(86, 134, 255, 0.26),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+#root .ui-day-secured,
+#root .ui-toast {
+  border-color: rgba(144, 176, 255, 0.32) !important;
+  background:
+    radial-gradient(circle at 50% -8%, rgba(96, 147, 255, 0.22), transparent 48%),
+    linear-gradient(180deg, rgba(7, 13, 29, 0.98), rgba(0, 1, 5, 0.99)) !important;
+}
+
+@media (max-width: 430px) {
+  #root .auth-shell {
+    min-height: calc(100dvh - 18px);
+    border-radius: 32px !important;
+  }
+
+  #root .auth-shell::before {
+    inset: 25% -44% 20% !important;
+  }
+
+  #root .auth-shell::after {
+    bottom: 24%;
+    height: 24%;
+  }
+
+  #root .auth-title {
+    font-size: clamp(3.75rem, 17vw, 5.2rem) !important;
+  }
+
+  #root .auth-orbit {
+    box-shadow:
+      0 0 70px rgba(51, 109, 255, 0.24),
+      inset 0 0 52px rgba(29, 78, 216, 0.24) !important;
+  }
+
+  #root .auth-pillar {
+    border-radius: 23px !important;
+  }
+
+  #root .auth-pillar > div:first-child {
+    height: 42px;
+    width: 42px;
+  }
+
+  #root .auth-panel {
+    border-radius: 30px !important;
+  }
+}
+
+@media (max-width: 360px) {
+  #root .auth-title {
+    font-size: clamp(3.3rem, 16vw, 4.5rem) !important;
+  }
+
+  #root .auth-pillar > div:first-child {
+    height: 38px;
+    width: 38px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  #root .auth-shell,
+  #root .auth-logo,
+  #root .auth-kicker,
+  #root .auth-title,
+  #root .auth-orbit,
+  #root .auth-panel,
+  #root .auth-pillar,
+  #root .ui-command-card,
+  #root .ui-commitment-card,
+  #root .xp-task-card,
+  #root .native-tab {
+    transition:
+      transform 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      border-color 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      background 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      box-shadow 260ms cubic-bezier(0.16, 1, 0.3, 1),
+      filter 260ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  #root button:active {
+    transform: scale(0.975);
+  }
+
+  #root .auth-pillar:active,
+  #root .xp-task-card:active,
+  #root .ui-commitment-card:active {
+    transform: scale(0.985);
+  }
+}
