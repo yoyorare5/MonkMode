@@ -29,6 +29,12 @@ const required = [
   ["Strict commitments", "strict commitment layer missing"],
   ["Layer 2", "XP layer framing missing"],
   ["Do this now", "next-action command missing"],
+  ["Identity OS", "identity OS screen missing"],
+  ["MODULE_DEFINITIONS", "life operating modules missing"],
+  ["Orthodox watchfulness", "Orthodox fasting mode missing"],
+  ["Hard monk mode day", "hard monk preset missing"],
+  ["Distraction control", "distraction-control layer missing"],
+  ["Discipline score", "discipline score progression missing"],
 ];
 
 for (const [needle, message] of required) {
