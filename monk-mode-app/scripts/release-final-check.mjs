@@ -56,6 +56,9 @@ const required = [
   ["settings-screen", "settings mockup screen missing"],
   ["System settings", "settings mockup title missing"],
   ["Lock tomorrow", "plan lock ritual missing"],
+  ["local-device-guard", "local device auth fallback guard missing"],
+  ["setSession(null); setLocalMode(true); setAuthMessage", "local fallback does not clear auth state"],
+  ["setScreen((current) => (current === \"app\" ? current : \"auth\"))", "auth listener can still bounce local mode back to auth"],
 ];
 
 for (const [needle, message] of required) {
