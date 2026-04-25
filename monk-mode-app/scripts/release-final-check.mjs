@@ -35,6 +35,11 @@ const required = [
   ["Hard monk mode day", "hard monk preset missing"],
   ["Distraction control", "distraction-control layer missing"],
   ["Discipline score", "discipline score progression missing"],
+  ["ui-shell", "obsidian shell visual marker missing"],
+  ["ui-panel", "obsidian panel visual marker missing"],
+  ["ui-bottom-nav", "native bottom nav visual marker missing"],
+  ["ui-commitment-panel", "strict commitment visual hierarchy missing"],
+  ["xp-task-card", "XP task visual polish missing"],
 ];
 
 for (const [needle, message] of required) {
