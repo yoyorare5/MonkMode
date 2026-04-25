@@ -8,6 +8,7 @@ import './command-page.css'
 import './command-tuning.css'
 import './screen-mockup.css'
 import './iphone-bugfix.css'
+import './iphone-final-fit.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
