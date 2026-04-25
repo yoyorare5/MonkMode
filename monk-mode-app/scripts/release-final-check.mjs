@@ -30,7 +30,7 @@ const required = [
   ["MODULE_DEFINITIONS", "life operating modules missing"],
   ["Orthodox watchfulness", "Orthodox fasting mode missing"],
   ["Hard monk mode day", "hard monk preset missing"],
-  ["Distraction control", "distraction-control layer missing"],
+  ["difficult to distract", "distraction-control layer missing"],
   ["Discipline score", "discipline score progression missing"],
   ["ui-shell", "obsidian shell visual marker missing"],
   ["fluid-panel", "fluid panel visual marker missing"],
