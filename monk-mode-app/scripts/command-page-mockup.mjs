@@ -75,7 +75,7 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
 
       <div className="command-metric-strip">
         <div className="command-metric"><span className="metric-icon"><ShieldCheck className="h-6 w-6" /></span><div><small>Strict</small><strong>{completed}/6</strong></div></div>
-        <div className="command-metric"><span className="metric-icon"><Flame className="h-6 w-6" /></span><div><small>Fast</small><strong>{percent}%</strong></div></div>
+        <div className="command-metric"><span className="metric-icon"><Sparkles className="h-6 w-6" /></span><div><small>Fast</small><strong>{percent}%</strong></div></div>
         <div className="command-metric"><span className="metric-icon is-green"><Lock className="h-6 w-6" /></span><div><small>Status</small><strong>{statusLabel}</strong></div></div>
       </div>
     </Panel>
