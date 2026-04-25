@@ -39,7 +39,7 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
   const rewards = state.xp.rewards;
   const level = Math.max(1, Math.floor((rewards.totalXp || 0) / 500) + 1);
   const rank = rewards.totalXp >= 2500 ? "Consecrated" : rewards.streakDays >= 3 ? "Steadfast" : "Unstoppable";
-  const strictItems = run ? run.rules : DEFAULT_RULES.map((label, index) => ({ id: \\`preview-\\${index}\\`, label, order: index + 1 }));
+  const strictItems = run ? run.rules : DEFAULT_RULES.map((label, index) => ({ id: "preview-" + index, label, order: index + 1 }));
   const todayTasks = state.xp.todos.filter((todo) => todo.status === "open" && (todo.today || todo.dueDate === todayKey())).slice(0, 4);
   const openTodos = state.xp.todos.filter((todo) => todo.status === "open");
   const statusLabel = completed === 6 ? "Kept" : "Open";
@@ -47,7 +47,7 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
   const primaryBody = run ? action.body : "Create the covenant, set six strict commitments, and enter the day under command.";
 
   return <div className="command-screen space-y-6">
-    <Panel className={cn("command-hero-card p-5 sm:p-7", \\`risk-\\${danger.level}\\`)}>
+    <Panel className={cn("command-hero-card p-5 sm:p-7", "risk-" + danger.level)}>
       <div className="command-mode-row">
         <span><Smartphone className="h-4 w-4" />{user?.id === "local" ? "Local device" : "Cloud account"}</span>
         <span className="is-active"><Target className="h-4 w-4" />{user?.id === "local" ? "Device mode" : "Synced mode"}</span>
@@ -57,7 +57,7 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
       <div className="command-current-grid">
         <div className="min-w-0">
           <div className="command-eyebrow">Current fast</div>
-          <h1>{run ? \\`Day \\${run.currentDay} of \\${run.duration}\\` : "No active fast"}</h1>
+          <h1>{run ? "Day " + run.currentDay + " of " + run.duration : "No active fast"}</h1>
           <p>{run ? "Strict commitments close before midnight New York time." : "Set the fast, define the six non-negotiables, and enter the day deliberately."}</p>
         </div>
         <div className="command-kept-tile">
@@ -107,7 +107,7 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
         <div className="mt-4 space-y-3">
           {strictItems.map((rule) => {
             const checked = Boolean(day?.completedRuleIds.includes(rule.id));
-            return <button key={rule.id} type="button" disabled={!run} onClick={() => run && onToggleRule(rule.id)} className={cn("command-rule-row", checked ? "is-kept" : "is-open")}> 
+            return <button key={rule.id} type="button" disabled={!run} onClick={() => run && onToggleRule(rule.id)} className={cn("command-rule-row", checked ? "is-kept" : "is-open")}>
               <span className="rule-check">{checked ? <Check className="h-4 w-4" /> : rule.order}</span>
               <span>{rule.label}</span>
             </button>;
@@ -119,8 +119,8 @@ replaceFunction("TodayScreen", `function TodayScreen({ user, state, seconds, dan
         <div className="command-section-head"><div><span>Layer 2</span><h2>Execution tasks</h2></div><strong>{todayTasks.length}/{openTodos.length}</strong></div>
         <div className="mt-4 space-y-3">
           {todayTasks.length ? todayTasks.map((todo) => <div key={todo.id} className="command-xp-row">
-            <button type="button" onClick={() => onCompleteTodo(todo.id)} aria-label={\`Complete \\${todo.title}\`}><Check className="h-4 w-4" /></button>
-            <div className="min-w-0 flex-1"><h3>{todo.title}</h3><p>{todo.category} · {todo.phase}</p></div>
+            <button type="button" onClick={() => onCompleteTodo(todo.id)} aria-label={"Complete " + todo.title}><Check className="h-4 w-4" /></button>
+            <div className="min-w-0 flex-1"><h3>{todo.title}</h3><p>{todo.category} / {todo.phase}</p></div>
             <span>{todo.xp} XP</span>
           </div>) : <div className="command-empty-state"><Database className="h-5 w-5" /><p>No execution tasks are marked for today.</p><Button onClick={() => onUpdateUi({ activeTab: "inbox" })} className="mt-3 w-full border border-white/10 bg-white/[.04] text-slate-200">Open Execute</Button></div>}
           {openTodos.slice(0, 3).filter((todo) => !todo.today && todo.dueDate !== todayKey()).map((todo) => <button key={todo.id} type="button" onClick={() => onSendToday(todo.id)} className="command-send-row"><Plus className="h-4 w-4" />Send {todo.title} to today</button>)}
