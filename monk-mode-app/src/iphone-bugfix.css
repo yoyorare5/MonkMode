@@ -1,0 +1,202 @@
+/* iPhone launch bugfix layer. Keep this last so it wins over earlier visual passes. */
+:root {
+  --fm-deep-blue: #08215f;
+  --fm-royal-blue: #153fae;
+  --fm-ink-blue: #02091d;
+}
+
+#root main {
+  padding-bottom: calc(260px + env(safe-area-inset-bottom)) !important;
+  scroll-padding-bottom: calc(260px + env(safe-area-inset-bottom)) !important;
+}
+
+#root .command-screen,
+#root .mock-screen {
+  padding-bottom: calc(5rem + env(safe-area-inset-bottom)) !important;
+}
+
+#root .app-topbar {
+  padding-inline: max(0.9rem, env(safe-area-inset-left)) max(0.9rem, env(safe-area-inset-right)) !important;
+  margin-bottom: 1.1rem !important;
+}
+
+#root .app-topbar > div {
+  max-width: 58rem !important;
+  display: flex !important;
+  align-items: center !important;
+  gap: 0.62rem !important;
+}
+
+#root .app-topbar > div > div:first-child {
+  flex: 1 1 auto !important;
+  min-width: 0 !important;
+  gap: 0.72rem !important;
+}
+
+#root .app-topbar .ui-badge {
+  display: none !important;
+}
+
+#root .app-topbar .ui-brand-mark {
+  width: 3.15rem !important;
+  height: 3.15rem !important;
+  flex: 0 0 3.15rem !important;
+  box-shadow:
+    0 0 0 1px rgba(220, 232, 255, 0.18),
+    0 0 28px rgba(21, 63, 174, 0.32),
+    inset 0 1px 0 rgba(255, 255, 255, 0.13),
+    inset 0 -11px 21px rgba(21, 63, 174, 0.2) !important;
+}
+
+#root .app-topbar .ui-brand-mark + div {
+  min-width: 0 !important;
+  flex: 1 1 auto !important;
+}
+
+#root .app-topbar .ui-brand-mark + div > div:first-child {
+  max-width: none !important;
+  overflow: visible !important;
+  text-overflow: clip !important;
+  white-space: nowrap !important;
+  color: #fbfdff !important;
+  font-size: clamp(0.98rem, 4vw, 1.28rem) !important;
+  letter-spacing: 0.17em !important;
+  line-height: 1 !important;
+}
+
+#root .app-topbar .ui-icon-button {
+  width: 3.12rem !important;
+  height: 3.12rem !important;
+  flex: 0 0 3.12rem !important;
+}
+
+#root .ui-brand-mark::before,
+#root .auth-logo::before {
+  width: 0.34rem !important;
+  height: 2.05rem !important;
+  top: 53% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+#root .ui-brand-mark::after,
+#root .auth-logo::after {
+  width: 1.68rem !important;
+  height: 0.34rem !important;
+  top: 43% !important;
+  transform: translate(-50%, -50%) !important;
+}
+
+#root .auth-logo::before {
+  height: 2.55rem !important;
+}
+
+#root .auth-logo::after {
+  width: 2.05rem !important;
+}
+
+#root .command-hero-card,
+#root .mock-hero,
+#root .mock-card,
+#root .command-score-strip {
+  border-color: rgba(210, 229, 255, 0.23) !important;
+  background:
+    radial-gradient(circle at 50% -18%, rgba(21, 63, 174, 0.18), transparent 38%),
+    radial-gradient(circle at 50% 70%, rgba(8, 33, 95, 0.2), transparent 28%),
+    linear-gradient(180deg, rgba(1, 4, 13, 0.99), rgba(0, 0, 2, 1)) !important;
+  box-shadow:
+    0 42px 140px rgba(0, 0, 0, 0.92),
+    0 0 42px rgba(8, 33, 95, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.03) !important;
+}
+
+#root .command-mode-row span.is-active,
+#root .native-tab.is-active,
+#root .ui-button.bg-blue-600,
+#root .auth-primary {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(187, 211, 255, 0.2), transparent 48%),
+    linear-gradient(180deg, #1c55d6 0%, var(--fm-royal-blue) 42%, var(--fm-deep-blue) 100%) !important;
+  border-color: rgba(139, 182, 255, 0.4) !important;
+  box-shadow:
+    0 18px 48px rgba(0, 0, 0, 0.72),
+    0 0 30px rgba(21, 63, 174, 0.3),
+    inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+}
+
+#root .command-time-orb {
+  border-color: rgba(123, 169, 255, 0.26) !important;
+  background:
+    radial-gradient(ellipse at center, rgba(0, 0, 0, 0.98) 0%, rgba(1, 5, 16, 0.96) 55%, rgba(4, 18, 58, 0.58) 72%, transparent 73%),
+    linear-gradient(180deg, rgba(0, 1, 5, 0.98), rgba(0, 0, 2, 1)) !important;
+}
+
+#root .command-time-value,
+#root .command-current-grid h1,
+#root .command-kept-tile strong,
+#root .command-metric strong,
+#root .command-score-item strong {
+  color: #fff !important;
+  text-shadow: 0 20px 48px rgba(0, 0, 0, 0.95) !important;
+}
+
+#root .command-score-strip {
+  margin-bottom: 1.35rem !important;
+}
+
+#root .local-device-guard {
+  position: relative;
+  z-index: 3;
+}
+
+@media (max-width: 700px) {
+  #root .app-topbar .ui-brand-mark {
+    width: 3rem !important;
+    height: 3rem !important;
+    flex-basis: 3rem !important;
+  }
+
+  #root .app-topbar .ui-icon-button {
+    width: 3rem !important;
+    height: 3rem !important;
+    flex-basis: 3rem !important;
+  }
+}
+
+@media (max-width: 430px) {
+  #root .app-topbar {
+    padding-inline: 0.78rem !important;
+  }
+
+  #root .app-topbar > div {
+    gap: 0.5rem !important;
+  }
+
+  #root .app-topbar .ui-brand-mark {
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+    flex-basis: 2.85rem !important;
+  }
+
+  #root .app-topbar .ui-brand-mark + div > div:first-child {
+    font-size: clamp(0.9rem, 4.7vw, 1.08rem) !important;
+    letter-spacing: 0.14em !important;
+  }
+
+  #root .app-topbar .ui-icon-button {
+    width: 2.85rem !important;
+    height: 2.85rem !important;
+    flex-basis: 2.85rem !important;
+  }
+
+  #root .ui-brand-mark::before {
+    width: 0.3rem !important;
+    height: 1.82rem !important;
+  }
+
+  #root .ui-brand-mark::after {
+    width: 1.45rem !important;
+    height: 0.3rem !important;
+    top: 42% !important;
+  }
+}
