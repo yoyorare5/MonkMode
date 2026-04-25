@@ -36,9 +36,12 @@ const required = [
   ["Distraction control", "distraction-control layer missing"],
   ["Discipline score", "discipline score progression missing"],
   ["ui-shell", "obsidian shell visual marker missing"],
-  ["ui-panel", "obsidian panel visual marker missing"],
-  ["ui-bottom-nav", "native bottom nav visual marker missing"],
-  ["ui-commitment-panel", "strict commitment visual hierarchy missing"],
+  ["fluid-panel", "fluid panel visual marker missing"],
+  ["auth-stage", "cinematic auth screen missing"],
+  ["auth-panel", "spherical auth panel missing"],
+  ["auth-orbit", "auth orbit visual system missing"],
+  ["native-tabbar", "native bottom nav visual marker missing"],
+  ["fluid-commitment-panel", "strict commitment visual hierarchy missing"],
   ["xp-task-card", "XP task visual polish missing"],
 ];
 
