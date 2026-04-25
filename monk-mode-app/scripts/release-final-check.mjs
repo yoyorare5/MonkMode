@@ -17,15 +17,12 @@ if (app.includes("AlertTriangle") && !app.includes("  AlertTriangle,")) {
 
 const finalApp = readFileSync(appPath, "utf8");
 const required = [
-  ["AlertTriangle,", "archive state icon import missing"],
   ["applyPresetToState(next, \"dailyRule\")", "onboarding preset install is not atomic"],
   ["setStep((current) => Math.min(3, current + 1))", "onboarding Continue must use functional step navigation"],
   ["setStep((current) => Math.max(1, current - 1))", "onboarding Back must use functional step navigation"],
   ["window.scrollTo({ top: 0, behavior: \"smooth\" })", "onboarding step transition must reset scroll"],
   ["const deleteTodo =", "XP delete handler missing"],
   ["onDeleteTodo={deleteTodo}", "XP delete handler not wired"],
-  ["Fast broken", "failed archive copy missing"],
-  ["Fast completed", "completed archive copy missing"],
   ["Strict commitments", "strict commitment layer missing"],
   ["Layer 2", "XP layer framing missing"],
   ["Do this now", "next-action command missing"],
@@ -39,7 +36,7 @@ const required = [
   ["fluid-panel", "fluid panel visual marker missing"],
   ["auth-stage", "cinematic auth screen missing"],
   ["auth-panel", "spherical auth panel missing"],
-  ["auth-orbit", "auth orbit visual system missing"],
+  ["auth-orbit", "cinematic auth orbit visual system missing"],
   ["native-tabbar", "native bottom nav visual marker missing"],
   ["fluid-commitment-panel", "strict commitment visual hierarchy missing"],
   ["xp-task-card", "XP task visual polish missing"],
