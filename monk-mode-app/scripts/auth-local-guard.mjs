@@ -9,9 +9,12 @@ function fail(message) {
   throw new Error(`[auth-local-guard] ${message}`);
 }
 
-const authButton = '<Button onClick={onLocal} className="mt-3 w-full border border-white/10 bg-white/[.04] text-slate-300">Continue on this device</Button>';
-const guardedButton = '<Button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLocal(); }} className="local-device-guard mt-3 w-full border border-white/10 bg-white/[.04] text-slate-300">Continue on this device</Button>';
-if (app.includes(authButton)) app = app.replace(authButton, guardedButton);
+if (!app.includes("local-device-guard")) {
+  app = app.replace(
+    /<Button onClick=\{onLocal\} className="([^"]*)">([\s\S]*?Continue on this device[\s\S]*?)<\/Button>/,
+    '<Button type="button" onClick={(event) => { event.preventDefault(); event.stopPropagation(); onLocal(); }} className="local-device-guard $1">$2</Button>',
+  );
+}
 
 const localCallback = 'onLocal={() => { setLocalMode(true); setScreen("app"); }}';
 const guardedCallback = 'onLocal={() => { setSession(null); setLocalMode(true); setAuthMessage(""); setScreen("app"); }}';
