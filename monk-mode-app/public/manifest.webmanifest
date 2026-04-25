@@ -6,8 +6,8 @@
   "scope": "/",
   "display": "standalone",
   "display_override": ["standalone", "minimal-ui"],
-  "background_color": "#02040a",
-  "theme_color": "#02040a",
+  "background_color": "#000105",
+  "theme_color": "#000105",
   "orientation": "portrait",
   "categories": ["health", "lifestyle", "productivity"],
   "icons": [
