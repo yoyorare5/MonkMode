@@ -1,0 +1,226 @@
+/* Final color correction layer: darker royal blues, stronger contrast, restored brand mark. */
+:root {
+  --royal-blue-950: #071436;
+  --royal-blue-900: #0b2163;
+  --royal-blue-850: #11318a;
+  --royal-blue-800: #183fae;
+  --royal-blue-700: #2455d6;
+  --royal-blue-light: #9bbdff;
+  --contrast-white: #fbfdff;
+  --contrast-secondary: #d2d9e8;
+  --contrast-muted: #929db4;
+}
+
+#root .ui-shell-glow {
+  background:
+    radial-gradient(circle at 50% -10%, rgba(24, 63, 174, 0.14), transparent 24%),
+    radial-gradient(circle at 50% 42%, rgba(10, 33, 99, 0.18), transparent 30%),
+    radial-gradient(circle at 92% 8%, rgba(231, 189, 115, 0.03), transparent 22%),
+    linear-gradient(180deg, #000 0%, #010207 42%, #000 100%) !important;
+}
+
+#root [class*="text-slate-300"],
+#root [class*="text-slate-400"] {
+  color: var(--contrast-secondary) !important;
+}
+
+#root [class*="text-slate-500"],
+#root [class*="text-slate-600"] {
+  color: var(--contrast-muted) !important;
+}
+
+#root .ui-panel,
+#root .fluid-panel,
+#root .os-panel,
+#root .os-command,
+#root .xp-task-card,
+#root .ui-stat,
+#root .ui-danger-meter,
+#root .time-capsule,
+#root .auth-panel,
+#root .native-tabbar-inner {
+  border-color: rgba(220, 232, 255, 0.16) !important;
+}
+
+#root .ui-command-card,
+#root .os-command,
+#root .ui-commitment-panel,
+#root .fluid-commitment-panel {
+  background:
+    radial-gradient(circle at 50% -14%, rgba(31, 74, 180, 0.22), transparent 42%),
+    radial-gradient(circle at 100% 100%, rgba(231, 189, 115, 0.045), transparent 34%),
+    linear-gradient(180deg, rgba(4, 10, 24, 0.99), rgba(0, 1, 5, 1)) !important;
+  box-shadow:
+    0 44px 140px rgba(0, 0, 0, 0.88),
+    0 0 46px rgba(17, 49, 138, 0.16),
+    inset 0 1px 0 rgba(255, 255, 255, 0.09) !important;
+}
+
+/* Darker primary blue: removes the candy/electric look from active pills and CTAs. */
+#root .ui-button.bg-blue-600,
+#root .auth-primary,
+#root .native-tab.is-active,
+#root .ui-bottom-tab.is-active {
+  background:
+    radial-gradient(circle at 50% -12%, rgba(185, 210, 255, 0.23), transparent 48%),
+    linear-gradient(180deg, var(--royal-blue-700) 0%, var(--royal-blue-850) 48%, var(--royal-blue-950) 100%) !important;
+  border-color: rgba(155, 189, 255, 0.34) !important;
+  color: #fff !important;
+  box-shadow:
+    0 18px 48px rgba(7, 20, 54, 0.78),
+    0 0 30px rgba(24, 63, 174, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.19) !important;
+}
+
+#root .auth-title .block {
+  background: linear-gradient(180deg, #c5d9ff 0%, #6d96ff 38%, #2e61dd 70%, #143a9c 100%) !important;
+  -webkit-background-clip: text !important;
+  background-clip: text !important;
+  filter: drop-shadow(0 16px 30px rgba(17, 49, 138, 0.3)) !important;
+}
+
+#root .auth-kicker,
+#root .ui-badge[class*="blue"] {
+  border-color: rgba(123, 162, 255, 0.3) !important;
+  background:
+    radial-gradient(circle at 0% 50%, rgba(24, 63, 174, 0.18), transparent 45%),
+    linear-gradient(180deg, rgba(5, 11, 26, 0.92), rgba(0, 1, 5, 0.96)) !important;
+  color: #dce8ff !important;
+}
+
+#root .auth-shell {
+  background:
+    radial-gradient(circle at 50% 38%, rgba(10, 33, 99, 0.28), transparent 27%),
+    radial-gradient(circle at 50% 53%, rgba(24, 63, 174, 0.13), transparent 25%),
+    radial-gradient(circle at 50% 82%, rgba(231, 189, 115, 0.035), transparent 22%),
+    linear-gradient(180deg, #01030a 0%, #000104 36%, #000 100%) !important;
+}
+
+#root .auth-shell::before {
+  background:
+    radial-gradient(ellipse at center, transparent 41%, rgba(60, 103, 210, 0.22) 41.35%, rgba(60, 103, 210, 0.045) 42.15%, transparent 43.3%),
+    radial-gradient(ellipse at center, transparent 55%, rgba(231, 189, 115, 0.12) 55.25%, transparent 56.4%),
+    radial-gradient(ellipse at center, transparent 67%, rgba(80, 112, 180, 0.06) 67.25%, transparent 68.2%) !important;
+  filter: drop-shadow(0 0 24px rgba(17, 49, 138, 0.16)) !important;
+}
+
+#root .auth-orbit {
+  background:
+    radial-gradient(circle at 50% 50%, rgba(0, 0, 0, 1) 36%, rgba(4, 13, 40, 0.95) 42%, rgba(24, 63, 174, 0.26) 48%, transparent 61%) !important;
+  border-color: rgba(90, 132, 232, 0.36) !important;
+  box-shadow:
+    0 0 74px rgba(24, 63, 174, 0.26),
+    inset 0 0 58px rgba(10, 33, 99, 0.36),
+    inset 0 0 0 1px rgba(255, 255, 255, 0.055) !important;
+}
+
+#root .auth-core {
+  box-shadow:
+    0 0 0 8px rgba(0, 0, 0, 0.54),
+    0 0 0 15px rgba(17, 49, 138, 0.06),
+    0 0 48px rgba(24, 63, 174, 0.34),
+    inset 0 -16px 28px rgba(24, 63, 174, 0.28),
+    inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+}
+
+/* Restore the top-left logo and make it monochrome, not the blue app icon. */
+#root .ui-brand-mark,
+#root .auth-logo {
+  position: relative !important;
+  overflow: hidden !important;
+  background-image:
+    radial-gradient(circle at 50% 18%, rgba(255, 255, 255, 0.12), transparent 42%),
+    radial-gradient(circle at 50% 100%, rgba(255, 255, 255, 0.055), transparent 45%),
+    linear-gradient(180deg, #071021 0%, #010207 58%, #000 100%) !important;
+  background-size: auto !important;
+  background-position: center !important;
+  border-color: rgba(220, 232, 255, 0.22) !important;
+  box-shadow:
+    0 0 0 1px rgba(255, 255, 255, 0.035),
+    0 12px 34px rgba(0, 0, 0, 0.62),
+    inset 0 1px 0 rgba(255, 255, 255, 0.1),
+    inset 0 -12px 22px rgba(255, 255, 255, 0.035) !important;
+}
+
+#root .ui-brand-mark::before,
+#root .auth-logo::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 7px;
+  height: 24px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff 0%, #dfe7f6 100%);
+  transform: translate(-50%, -50%);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.34);
+}
+
+#root .ui-brand-mark::after,
+#root .auth-logo::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 25px;
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fff 0%, #dfe7f6 100%);
+  transform: translate(-50%, -38%);
+  box-shadow: 0 0 14px rgba(255, 255, 255, 0.34);
+}
+
+#root .ui-brand-mark > svg.lucide-flame,
+#root .auth-logo > svg.lucide-flame {
+  opacity: 0 !important;
+}
+
+#root .auth-logo {
+  box-shadow:
+    0 0 0 8px rgba(255, 255, 255, 0.02),
+    0 0 26px rgba(255, 255, 255, 0.08),
+    0 18px 52px rgba(0, 0, 0, 0.68),
+    inset 0 1px 0 rgba(255, 255, 255, 0.11) !important;
+}
+
+/* Keep Freedom distinct: red flame, not the monochrome brand mark. */
+#root .auth-pillar:nth-child(4) *:has(> svg.lucide-flame) {
+  background-image:
+    radial-gradient(circle at 50% 25%, rgba(255, 205, 214, 0.28), transparent 44%),
+    radial-gradient(circle at 50% 78%, rgba(255, 111, 134, 0.24), transparent 48%),
+    linear-gradient(180deg, rgba(22, 5, 12, 0.96), rgba(0, 1, 5, 0.98)) !important;
+  color: #ff8ca1 !important;
+}
+
+#root .auth-pillar:nth-child(4) svg.lucide-flame {
+  opacity: 1 !important;
+}
+
+#root .ui-commitment-card.is-kept {
+  background:
+    radial-gradient(circle at 50% 0%, rgba(90, 132, 232, 0.18), transparent 56%),
+    linear-gradient(180deg, rgba(17, 49, 138, 0.27), rgba(1, 4, 13, 0.98)) !important;
+  border-color: rgba(123, 162, 255, 0.36) !important;
+}
+
+#root .ui-input:focus,
+#root .premium-input:focus,
+#root .ui-select:focus {
+  border-color: rgba(123, 162, 255, 0.48) !important;
+  box-shadow:
+    0 0 0 4px rgba(17, 49, 138, 0.16),
+    0 0 22px rgba(17, 49, 138, 0.18),
+    inset 0 1px 0 rgba(255, 255, 255, 0.07) !important;
+}
+
+@media (max-width: 430px) {
+  #root .ui-brand-mark::before {
+    height: 21px;
+    width: 6px;
+  }
+
+  #root .ui-brand-mark::after {
+    width: 22px;
+    height: 6px;
+  }
+}
