@@ -5,6 +5,7 @@ import './index.css'
 import './mockup-polish.css'
 import './final-color-fix.css'
 import './command-page.css'
+import './command-tuning.css'
 
 ReactDOM.createRoot(document.getElementById('root')).render(
   <React.StrictMode>
