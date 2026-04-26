@@ -111,3 +111,67 @@ body,
     margin-inline: 0 !important;
   }
 }
+
+/* Final spacing pass from iPhone screenshots. */
+#root .app-topbar .ui-brand-mark::before {
+  width: 0.18rem !important;
+  height: 1.08rem !important;
+  top: 53% !important;
+  border-radius: 999px !important;
+}
+
+#root .app-topbar .ui-brand-mark::after {
+  width: 0.86rem !important;
+  height: 0.18rem !important;
+  top: 43% !important;
+  border-radius: 999px !important;
+}
+
+#root .auth-stage {
+  padding-top: 0 !important;
+  padding-bottom: max(0.35rem, env(safe-area-inset-bottom)) !important;
+}
+
+#root .auth-shell {
+  margin-top: 0 !important;
+}
+
+#root .auth-shell header {
+  margin-bottom: 0 !important;
+}
+
+#root .auth-shell .auth-logo::before {
+  width: 0.2rem !important;
+  height: 1.26rem !important;
+  top: 53% !important;
+}
+
+#root .auth-shell .auth-logo::after {
+  width: 0.98rem !important;
+  height: 0.2rem !important;
+  top: 43% !important;
+}
+
+#root main:has(.settings-screen) {
+  padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+  scroll-padding-bottom: calc(74px + env(safe-area-inset-bottom)) !important;
+}
+
+#root .settings-screen {
+  padding-bottom: 0 !important;
+  margin-bottom: 0 !important;
+}
+
+#root .settings-screen .settings-signout {
+  margin-bottom: 0 !important;
+}
+
+@media (max-width: 430px) {
+  #root .auth-stage {
+    padding-top: 0 !important;
+  }
+
+  #root .auth-shell {
+    transform: translateY(-0.55rem);
+  }
+}
