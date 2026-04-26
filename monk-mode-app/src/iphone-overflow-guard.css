@@ -1,0 +1,113 @@
+/* Last-mile iPhone guard: no cropped logo, no broken stat words, tighter app chrome. */
+html,
+body,
+#root {
+  touch-action: pan-y;
+  -webkit-text-size-adjust: 100%;
+}
+
+#root .ui-shell > div {
+  padding-left: max(8px, env(safe-area-inset-left)) !important;
+  padding-right: max(8px, env(safe-area-inset-right)) !important;
+}
+
+#root .ui-brand-mark,
+#root .auth-logo {
+  overflow: visible !important;
+}
+
+#root .ui-brand-mark::before,
+#root .auth-logo::before {
+  width: 0.24rem !important;
+  height: 1.46rem !important;
+  top: 54% !important;
+}
+
+#root .ui-brand-mark::after,
+#root .auth-logo::after {
+  width: 1.14rem !important;
+  height: 0.24rem !important;
+  top: 43% !important;
+}
+
+#root .command-mode-row > span {
+  min-width: 0 !important;
+}
+
+#root .command-mode-row > span:last-child {
+  max-width: 100% !important;
+  font-size: 0.5rem !important;
+}
+
+#root .mock-stat-grid {
+  gap: 0.55rem !important;
+}
+
+#root .mock-stat-grid .ui-stat,
+#root .mock-card .ui-stat {
+  min-width: 0 !important;
+  min-height: 4.35rem !important;
+  padding: 0.6rem 0.45rem !important;
+  overflow: hidden !important;
+}
+
+#root .mock-stat-grid .ui-stat div:first-child,
+#root .mock-card .ui-stat div:first-child {
+  font-size: 0.52rem !important;
+  letter-spacing: 0.16em !important;
+}
+
+#root .mock-stat-grid .ui-stat div:last-child,
+#root .mock-card .ui-stat div:last-child,
+#root .command-score-item:last-child strong {
+  display: block !important;
+  max-width: 100% !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+  white-space: nowrap !important;
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+  font-size: clamp(0.82rem, 5vw, 1.28rem) !important;
+  line-height: 1.05 !important;
+}
+
+#root .screen-select-row h3,
+#root .screen-mock-row h3,
+#root .screen-check-row {
+  overflow-wrap: normal !important;
+  word-break: normal !important;
+  hyphens: none !important;
+}
+
+#root .screen-select-row h3,
+#root .screen-mock-row h3 {
+  display: -webkit-box !important;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden !important;
+}
+
+#root .screen-select-row p,
+#root .screen-mock-row p {
+  white-space: nowrap !important;
+  overflow: hidden !important;
+  text-overflow: ellipsis !important;
+}
+
+@media (max-width: 430px) {
+  #root .mock-hero h1,
+  #root .screen-title h1 {
+    font-size: clamp(2.55rem, 13vw, 3.7rem) !important;
+    line-height: 0.98 !important;
+  }
+
+  #root .mock-hero,
+  #root .mock-card,
+  #root .command-hero-card,
+  #root .command-next-card,
+  #root .command-covenant-panel,
+  #root .command-execute-panel {
+    margin-inline: 0 !important;
+  }
+}
