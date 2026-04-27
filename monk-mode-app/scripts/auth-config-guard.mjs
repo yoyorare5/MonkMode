@@ -15,6 +15,15 @@ function replaceExact(before, after, label) {
   app = app.replace(before, after);
 }
 
+function replaceOptional(before, after, label) {
+  if (app.includes(after)) return;
+  if (!app.includes(before)) {
+    console.log(`[auth-config-guard] skipped optional ${label}`);
+    return;
+  }
+  app = app.replace(before, after);
+}
+
 replaceExact(
   `const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
 const SUPABASE_KEY = import.meta.env.VITE_SUPABASE_ANON_KEY;
@@ -111,7 +120,7 @@ replaceExact(
   "auth submit validation",
 );
 
-replaceExact(
+replaceOptional(
   `{!supabaseReady ? <div className="mb-4 rounded-[24px] border border-amber-300/20 bg-amber-500/10 p-4 text-sm leading-6 text-amber-100">Add VITE_SUPABASE_URL and VITE_SUPABASE_ANON_KEY to enable real auth. Device-only mode still works.</div> : null}`,
   `{!supabaseReady ? <div className="mb-4 rounded-[24px] border border-amber-300/20 bg-amber-500/10 p-4 text-sm leading-6 text-amber-100"><div className="font-semibold text-amber-50">Real login is not connected.</div><div className="mt-1">{supabaseConfigIssue}</div><div className="mt-2 text-amber-100/75">Use https://PROJECT_REF.supabase.co for VITE_SUPABASE_URL and the Supabase publishable key for VITE_SUPABASE_ANON_KEY.</div></div> : null}`,
   "auth config message",
