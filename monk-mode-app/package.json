@@ -4,14 +4,13 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/auth-config-guard.mjs && node scripts/release-final-check.mjs && vite",
-    "build": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/auth-config-guard.mjs && node scripts/release-final-check.mjs && vite build",
-    "test:smoke": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/auth-config-guard.mjs && node scripts/release-final-check.mjs",
+    "dev": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/fluid-local-ui.mjs && node scripts/release-final-check.mjs && vite",
+    "build": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/fluid-local-ui.mjs && node scripts/release-final-check.mjs && vite build",
+    "test:smoke": "node scripts/release-hardening.mjs && node scripts/mobile-onboarding-guard.mjs && node scripts/os-transformation-lite.mjs && node scripts/fluid-local-ui.mjs && node scripts/release-final-check.mjs",
     "lint": "eslint .",
     "preview": "vite preview"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.45.4",
     "framer-motion": "^12.38.0",
     "lucide-react": "^1.8.0",
     "react": "^19.2.4",
