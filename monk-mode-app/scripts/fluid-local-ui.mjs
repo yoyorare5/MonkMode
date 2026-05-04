@@ -113,12 +113,12 @@ replaceExact(
   const fastPercent = run ? Math.min(100, Math.round(((run.currentDay - 1 + strictDone / 6) / run.duration) * 100)) : 0;
   const dailyPercent = run ? Math.min(100, Math.round((strictDone / 6) * 100)) : 0;
   const [, typeTitle] = run ? fastType(run.fastingType) : ["", "No active fast"];
-  return <motion.section {...cardMotion} className={cn("fluid-orbit-card", danger.level === "critical" && "is-critical", danger.level === "danger" && "is-danger")} style={{ "--orbit-progress": `${Math.max(14, dailyPercent) * 3.6}deg` }}>
+  return <motion.section {...cardMotion} className={cn("fluid-orbit-card", danger.level === "critical" && "is-critical", danger.level === "danger" && "is-danger")} style={{ "--orbit-progress": String(Math.max(14, dailyPercent) * 3.6) + "deg" }}>
     <div className="fluid-orbit-bg" aria-hidden="true" />
     <div className="relative z-10 flex items-start justify-between gap-4">
       <div className="min-w-0">
         <div className="text-[0.68rem] font-black uppercase tracking-[.34em] text-sky-200/80">Current fast</div>
-        <h2 className="mt-2 text-3xl font-black tracking-[-.04em] text-white">{run ? `Day ${run.currentDay} of ${run.duration}` : "Begin the fast"}</h2>
+        <h2 className="mt-2 text-3xl font-black tracking-[-.04em] text-white">{run ? "Day " + run.currentDay + " of " + run.duration : "Begin the fast"}</h2>
         <p className="mt-2 line-clamp-2 max-w-[18rem] text-sm font-semibold leading-6 text-slate-400">{run ? typeTitle : "Set the six strict commitments and start local command."}</p>
       </div>
       <div className="shrink-0 rounded-[28px] border border-white/10 bg-black/35 px-4 py-3 text-center shadow-xl">
@@ -135,9 +135,9 @@ replaceExact(
       </div>
     </div>
     <div className="relative z-10 mt-7 grid grid-cols-3 overflow-hidden rounded-[28px] border border-white/10 bg-black/35 shadow-xl">
-      <StatCard label="Strict" value={`${strictDone}/6`} />
-      <StatCard label="Fast" value={`${fastPercent}%`} />
-      <StatCard label="XP" value={`${todayDone}/${Math.max(todayTodos.length, 1)}`} />
+      <StatCard label="Strict" value={String(strictDone) + "/6"} />
+      <StatCard label="Fast" value={String(fastPercent) + "%"} />
+      <StatCard label="XP" value={String(todayDone) + "/" + String(Math.max(todayTodos.length, 1))} />
     </div>
   </motion.section>;
 }
@@ -265,7 +265,7 @@ replacePattern(
       const dateKey = todayKey();
       const comboCount = current.xp.rewards.lastCompletionDayKey === dateKey ? Math.min(12, current.xp.rewards.comboCount + 1) : 1;
       let rewards = addRewardEvent({ ...current.xp.rewards, comboCount, lastCompletionAt: new Date().toISOString(), lastCompletionDayKey: dateKey }, { type: "todo", title: todo.title, amount: todo.xp, dateKey });
-      if (comboCount > 1) rewards = addRewardEvent({ ...rewards, comboCount }, { type: "combo", title: `${comboCount}x command combo`, amount: Math.min(50, (comboCount - 1) * 5), dateKey });
+      if (comboCount > 1) rewards = addRewardEvent({ ...rewards, comboCount }, { type: "combo", title: String(comboCount) + "x command combo", amount: Math.min(50, (comboCount - 1) * 5), dateKey });
       const completed = { ...todo, status: "completed", completedAt: new Date().toISOString(), completedDateKey: dateKey, today: false };
       const recurring = todo.recurrence !== "none" ? normalizeTodo({ ...todo, id: newId(), status: "open", completedAt: null, completedDateKey: null, today: false, dueDate: nextDueDate(todo.recurrence, dateKey), createdAt: new Date().toISOString(), lastGeneratedFrom: todo.id }) : null;
       const todos = current.xp.todos.map((item) => item.id === todoId ? completed : item);
@@ -275,9 +275,9 @@ replacePattern(
   const sendToday = (todoId) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.map((todo) => todo.id === todoId ? { ...todo, today: true, dueDate: todo.dueDate || todayKey() } : todo) } }));
   const seedPreset = (presetId, silent = false) => commitState((current) => {
     const preset = presetById(presetId);
-    const existingTitles = new Set(current.xp.todos.map((todo) => `${todo.title}-${todo.category}`));
-    const additions = preset.tasks.filter(([title, category]) => !existingTitles.has(`${title}-${category}`)).map(([title, category, xp, phase, description], index) => normalizeTodo({ title, category, xp, phase, description, today: true, dueDate: todayKey(), recurrence: preset.id === "dailyRule" ? "daily" : "none", sourcePresetId: preset.id, createdAt: new Date(Date.now() + index).toISOString() }));
-    const rewards = silent ? current.xp.rewards : addRewardEvent(current.xp.rewards, { type: "preset", title: `${preset.title} installed`, amount: preset.id === "dailyRule" ? 75 : 30, dateKey: todayKey(), presetId: preset.id });
+    const existingTitles = new Set(current.xp.todos.map((todo) => todo.title + "-" + todo.category));
+    const additions = preset.tasks.filter(([title, category]) => !existingTitles.has(title + "-" + category)).map(([title, category, xp, phase, description], index) => normalizeTodo({ title, category, xp, phase, description, today: true, dueDate: todayKey(), recurrence: preset.id === "dailyRule" ? "daily" : "none", sourcePresetId: preset.id, createdAt: new Date(Date.now() + index).toISOString() }));
+    const rewards = silent ? current.xp.rewards : addRewardEvent(current.xp.rewards, { type: "preset", title: preset.title + " installed", amount: preset.id === "dailyRule" ? 75 : 30, dateKey: todayKey(), presetId: preset.id });
     return { ...current, xp: { ...current.xp, todos: [...additions, ...current.xp.todos], rewards }, prep: { ...current.prep, activePreset: preset.id } };
   });
   const lockPlan = (dateKey, plan) => commitState((current) => {
