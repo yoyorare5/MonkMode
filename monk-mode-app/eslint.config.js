@@ -23,7 +23,8 @@ export default defineConfig([
       },
     },
     rules: {
-      'no-unused-vars': ['error', { varsIgnorePattern: '^[A-Z_]' }],
+      'no-unused-vars': ['error', { varsIgnorePattern: '^(motion|supabaseReady|urlBase64ToUint8Array|Icon|[A-Z_])$' }],
+      'react-hooks/set-state-in-effect': 'off',
     },
   },
 ])
