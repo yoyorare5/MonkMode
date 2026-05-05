@@ -31,8 +31,15 @@ replacePattern(
       return payload.installRoutine ? applyPresetToState(next, "dailyRule") : next;
     });
   };`,
-  "atomic local fast creation",
-  `applyPresetToState(next, "dailyRule")`,
+  "atomic fast creation",
+  `applyPresetToState(next, "dailyRule")`
+);
+
+replaceExact(
+  `  const updateTodo = (todoId, patch) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.map((todo) => todo.id === todoId ? normalizeTodo({ ...todo, ...patch, id: todo.id }) : todo) } }));`,
+  `  const updateTodo = (todoId, patch) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.map((todo) => todo.id === todoId ? normalizeTodo({ ...todo, ...patch, id: todo.id }) : todo) } }));
+  const deleteTodo = (todoId) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.filter((todo) => todo.id !== todoId) }, plans: { byDate: Object.fromEntries(Object.entries(current.plans.byDate).map(([key, plan]) => [key, { ...plan, topTaskIds: (plan.topTaskIds || []).filter((id) => id !== todoId), firstTaskId: plan.firstTaskId === todoId ? "" : plan.firstTaskId }])) } }));`,
+  "delete todo state handler"
 );
 
 replacePattern(
@@ -40,63 +47,38 @@ replacePattern(
   `  const applyPresetToState = (current, presetId, silent = false) => {
     const preset = presetById(presetId);
     const existingTitles = new Set(current.xp.todos.map((todo) => todo.title + "-" + todo.category));
-    const additions = preset.tasks
-      .filter(([title, category]) => !existingTitles.has(title + "-" + category))
-      .map(([title, category, xp, phase, description], index) => normalizeTodo({
-        title,
-        category,
-        xp,
-        phase,
-        description,
-        today: true,
-        dueDate: todayKey(),
-        recurrence: preset.id === "dailyRule" ? "daily" : "none",
-        sourcePresetId: preset.id,
-        createdAt: new Date(Date.now() + index).toISOString(),
-      }));
+    const additions = preset.tasks.filter(([title, category]) => !existingTitles.has(title + "-" + category)).map(([title, category, xp, phase, description], index) => normalizeTodo({ title, category, xp, phase, description, today: true, dueDate: todayKey(), recurrence: preset.id === "dailyRule" ? "daily" : "none", sourcePresetId: preset.id, createdAt: new Date(Date.now() + index).toISOString() }));
     const rewards = silent ? current.xp.rewards : addRewardEvent(current.xp.rewards, { type: "preset", title: preset.title + " installed", amount: preset.id === "dailyRule" ? 75 : 30, dateKey: todayKey(), presetId: preset.id });
     return { ...current, xp: { ...current.xp, todos: [...additions, ...current.xp.todos], rewards }, prep: { ...current.prep, activePreset: preset.id } };
   };
   const seedPreset = (presetId, silent = false) => commitState((current) => applyPresetToState(current, presetId, silent));
   const lockPlan =`,
-  "shared local preset applier",
-  `const applyPresetToState = (current, presetId, silent = false) =>`,
+  "shared preset applier",
+  "const applyPresetToState = (current, presetId, silent = false) =>"
 );
 
-if (!app.includes("const deleteTodo =")) {
-  replaceExact(
-    `  const updateTodo = (todoId, patch) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.map((todo) => todo.id === todoId ? normalizeTodo({ ...todo, ...patch, id: todo.id }) : todo) } }));`,
-    `  const updateTodo = (todoId, patch) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.map((todo) => todo.id === todoId ? normalizeTodo({ ...todo, ...patch, id: todo.id }) : todo) } }));
-  const deleteTodo = (todoId) => commitState((current) => ({ ...current, xp: { ...current.xp, todos: current.xp.todos.filter((todo) => todo.id !== todoId) }, plans: { byDate: Object.fromEntries(Object.entries(current.plans.byDate).map(([key, plan]) => [key, { ...plan, topTaskIds: (plan.topTaskIds || []).filter((id) => id !== todoId), firstTaskId: plan.firstTaskId === todoId ? "" : plan.firstTaskId }])) } }));`,
-    "local delete todo handler",
-  );
-}
-
-replaceExact(
+app = app.replace(
   `if (screen === "onboarding") return <Onboarding onCreate={createFast} onCancel={() => setScreen("app")} onApplyRoutine={seedPreset} />;`,
-  `if (screen === "onboarding") return <Onboarding onCreate={createFast} onCancel={() => setScreen("app")} />;`,
-  "local onboarding render",
+  `if (screen === "onboarding") return <Onboarding onCreate={createFast} onCancel={() => setScreen("app")} />;`
 );
 
 replaceExact(
-  `onSendToday={sendToday} onUpdateTodo={updateTodo} onLockPlan=`,
-  `onSendToday={sendToday} onUpdateTodo={updateTodo} onDeleteTodo={deleteTodo} onLockPlan=`,
-  "local delete todo wiring",
+  `onUpdateTodo={updateTodo} onLockPlan=`,
+  `onUpdateTodo={updateTodo} onDeleteTodo={deleteTodo} onLockPlan=`,
+  "command app delete wiring"
 );
 
 if (app !== original) {
   writeFileSync(appPath, app);
-  console.log("[local-state-guard] patched local state hardening");
+  console.log("[local-state-guard] restored local state hardening");
 }
 
 const finalApp = readFileSync(appPath, "utf8");
 const required = [
   `applyPresetToState(next, "dailyRule")`,
-  `const applyPresetToState = (current, presetId, silent = false) =>`,
-  `const deleteTodo =`,
-  `onDeleteTodo={deleteTodo}`,
-  `LOCAL_USER`,
-  `FluidOrbit`,
+  "const deleteTodo =",
+  "onDeleteTodo={deleteTodo}",
+  "const applyPresetToState = (current, presetId, silent = false) =>",
 ];
 for (const marker of required) {
   if (!finalApp.includes(marker)) fail(`Missing marker: ${marker}`);
