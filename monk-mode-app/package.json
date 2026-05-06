@@ -4,10 +4,15 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
+    "predev": "node scripts/write-fasting-mode-app.mjs",
     "dev": "vite",
+    "prebuild": "node scripts/write-fasting-mode-app.mjs",
     "build": "vite build",
+    "pretest:smoke": "node scripts/write-fasting-mode-app.mjs",
     "test:smoke": "node scripts/smoke-check.mjs",
+    "prelint": "node scripts/write-fasting-mode-app.mjs",
     "lint": "eslint .",
+    "prepreview": "node scripts/write-fasting-mode-app.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
