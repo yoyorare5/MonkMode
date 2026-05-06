@@ -144,6 +144,7 @@ i.yellow, .heat-50 { background: var(--yellow) !important; }
 .segmented { display: grid; grid-template-columns: repeat(3, 1fr); border-radius: 999px; padding: 4px; background: rgba(255,255,255,.05); margin-bottom: 18px; }
 .segmented button { min-height: 38px; border-radius: inherit; color: var(--muted); background: transparent; font-weight: 800; }
 .segmented button.active { color: white; background: rgba(255,255,255,.12); }
+.heatmap { margin-top: 1rem; }
 .heat-days, .heat-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 8px; }
 .heat-days { margin: 18px 0 8px; color: var(--soft); font-size: .72rem; }
 .heat-grid span { aspect-ratio: 1; border-radius: 8px; background: rgba(255,255,255,.08); }
