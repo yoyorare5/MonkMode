@@ -2,8 +2,11 @@ import { readFileSync } from "node:fs";
 import { resolve } from "node:path";
 
 const root = process.cwd();
-const app = readFileSync(resolve(root, "src", "App.jsx"), "utf8");
-const css = readFileSync(resolve(root, "src", "index.css"), "utf8");
+const app = readFileSync(resolve(root, "src", "FastingModeApp.jsx"), "utf8");
+const css = [
+  readFileSync(resolve(root, "src", "index.css"), "utf8"),
+  readFileSync(resolve(root, "src", "routine-goals.css"), "utf8")
+].join("\n");
 const pkg = readFileSync(resolve(root, "package.json"), "utf8");
 
 function fail(message) {
@@ -48,8 +51,10 @@ const requiredApp = [
   "Today's Discipline Score",
   "Next Best Action",
   "Non-Negotiables",
-  "Growth Actions",
-  "Recovery",
+  "Daily Routine",
+  "Goal Steps",
+  "Level System",
+  "Set the target.",
   "Proverbs 16:3"
 ];
 
@@ -64,6 +69,8 @@ const requiredCss = [
   ".bottom-nav",
   ".goal-chart",
   ".heatmap",
+  ".routine-card",
+  ".level-card",
   ".builder-shell",
   "@media (prefers-reduced-motion: reduce)"
 ];
