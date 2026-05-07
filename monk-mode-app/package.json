@@ -1,18 +1,18 @@
 {
   "name": "monk-mode-app",
   "private": true,
-  "version": "0.0.1",
+  "version": "0.0.2",
   "type": "module",
   "scripts": {
-    "predev": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs",
+    "predev": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs && node scripts/goals-redesign-fixes.mjs",
     "dev": "vite",
-    "prebuild": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs",
+    "prebuild": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs && node scripts/goals-redesign-fixes.mjs",
     "build": "vite build",
-    "pretest:smoke": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs",
+    "pretest:smoke": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs && node scripts/goals-redesign-fixes.mjs",
     "test:smoke": "node scripts/smoke-check.mjs",
-    "prelint": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs",
+    "prelint": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs && node scripts/goals-redesign-fixes.mjs",
     "lint": "eslint .",
-    "prepreview": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs",
+    "prepreview": "node scripts/write-fasting-mode-app.mjs && node scripts/app-final-fixes.mjs && node scripts/goals-redesign-fixes.mjs",
     "preview": "vite preview"
   },
   "dependencies": {
