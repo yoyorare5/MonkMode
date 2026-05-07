@@ -12,9 +12,9 @@
   "categories": ["health", "lifestyle", "productivity"],
   "icons": [
     {
-      "src": "/favicon.svg",
-      "sizes": "any",
-      "type": "image/svg+xml",
+      "src": "/icon-192-2026.png",
+      "sizes": "192x192",
+      "type": "image/png",
       "purpose": "any maskable"
     }
   ],
@@ -24,7 +24,7 @@
       "short_name": "Command",
       "description": "Return to prayer, commitments, and the fast command center.",
       "url": "/",
-      "icons": [{ "src": "/favicon.svg", "sizes": "any", "type": "image/svg+xml" }]
+      "icons": [{ "src": "/icon-192-2026.png", "sizes": "192x192", "type": "image/png" }]
     }
   ]
 }
