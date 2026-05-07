@@ -1,44 +1,46 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512" role="img" aria-label="Fasting Mode logo">
   <defs>
-    <linearGradient id="bg" x1="71" y1="42" x2="441" y2="482" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#17305d"/>
-      <stop offset="0.34" stop-color="#071329"/>
-      <stop offset="1" stop-color="#02040d"/>
+    <linearGradient id="tileFill" x1="70" y1="78" x2="446" y2="430" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#001b28"/>
+      <stop offset="0.45" stop-color="#000b12"/>
+      <stop offset="1" stop-color="#03140c"/>
     </linearGradient>
-    <radialGradient id="topLight" cx="0" cy="0" r="1" gradientUnits="userSpaceOnUse" gradientTransform="translate(128 56) rotate(61) scale(234 276)">
-      <stop stop-color="#5d83c8" stop-opacity="0.72"/>
-      <stop offset="0.34" stop-color="#2b4e8f" stop-opacity="0.24"/>
-      <stop offset="1" stop-color="#02040d" stop-opacity="0"/>
+    <linearGradient id="edge" x1="46" y1="84" x2="466" y2="434" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#00dfff"/>
+      <stop offset="0.52" stop-color="#19f0d5"/>
+      <stop offset="1" stop-color="#a6ff3d"/>
+    </linearGradient>
+    <linearGradient id="markFill" x1="114" y1="372" x2="406" y2="147" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#08b9ff"/>
+      <stop offset="0.48" stop-color="#18f0c8"/>
+      <stop offset="1" stop-color="#d9ff4d"/>
+    </linearGradient>
+    <radialGradient id="halo" cx="49%" cy="50%" r="49%">
+      <stop stop-color="#12e6ff" stop-opacity="0.25"/>
+      <stop offset="0.52" stop-color="#0a83a9" stop-opacity="0.16"/>
+      <stop offset="1" stop-color="#00111d" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="arc" x1="115" y1="309" x2="396" y2="309" gradientUnits="userSpaceOnUse">
-      <stop offset="0" stop-color="#2c64d7" stop-opacity="0"/>
-      <stop offset="0.18" stop-color="#4c8cff"/>
-      <stop offset="0.5" stop-color="#1f62df"/>
-      <stop offset="0.82" stop-color="#4c8cff"/>
-      <stop offset="1" stop-color="#2c64d7" stop-opacity="0"/>
-    </linearGradient>
-    <linearGradient id="cross" x1="205" y1="124" x2="318" y2="356" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#ffffff"/>
-      <stop offset="0.5" stop-color="#edf4ff"/>
-      <stop offset="1" stop-color="#b8c9f4"/>
-    </linearGradient>
-    <filter id="tileShadow" x="-20%" y="-20%" width="140%" height="140%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="24" stdDeviation="22" flood-color="#000" flood-opacity="0.42"/>
+    <filter id="softEdge" x="-25%" y="-25%" width="150%" height="150%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="9" flood-color="#03e6ff" flood-opacity="0.68"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="13" flood-color="#92ff4e" flood-opacity="0.48"/>
     </filter>
-    <filter id="crossGlow" x="-60%" y="-60%" width="220%" height="220%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#dce8ff" flood-opacity="0.48"/>
-      <feDropShadow dx="0" dy="14" stdDeviation="11" flood-color="#07122b" flood-opacity="0.62"/>
+    <filter id="markGlow" x="-35%" y="-35%" width="170%" height="170%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="0" dy="0" stdDeviation="6" flood-color="#13f4ff" flood-opacity="0.8"/>
+      <feDropShadow dx="0" dy="0" stdDeviation="14" flood-color="#6dff4c" flood-opacity="0.45"/>
+      <feDropShadow dx="0" dy="18" stdDeviation="14" flood-color="#000000" flood-opacity="0.72"/>
     </filter>
-    <filter id="arcGlow" x="-30%" y="-80%" width="160%" height="260%" color-interpolation-filters="sRGB">
-      <feDropShadow dx="0" dy="0" stdDeviation="10" flood-color="#3c83ff" flood-opacity="0.72"/>
-      <feDropShadow dx="0" dy="10" stdDeviation="11" flood-color="#123a8d" flood-opacity="0.7"/>
+    <filter id="innerShadow" x="-15%" y="-15%" width="130%" height="130%" color-interpolation-filters="sRGB">
+      <feDropShadow dx="-10" dy="-10" stdDeviation="10" flood-color="#0bdcff" flood-opacity="0.15"/>
+      <feDropShadow dx="12" dy="12" stdDeviation="12" flood-color="#000000" flood-opacity="0.72"/>
     </filter>
   </defs>
-  <rect x="32" y="32" width="448" height="448" rx="92" fill="url(#bg)" filter="url(#tileShadow)"/>
-  <rect x="32" y="32" width="448" height="448" rx="92" fill="url(#topLight)"/>
-  <path d="M115 250c6 88 66 144 141 144s135-56 141-144c-25 75-75 110-141 110S140 325 115 250Z" fill="url(#arc)" filter="url(#arcGlow)"/>
-  <g filter="url(#crossGlow)">
-    <path d="M232 126c0-7.18 5.82-13 13-13h22c7.18 0 13 5.82 13 13v94h78c7.18 0 13 5.82 13 13v23c0 7.18-5.82 13-13 13h-78v78c0 7.18-5.82 13-13 13h-22c-7.18 0-13-5.82-13-13v-78h-78c-7.18 0-13-5.82-13-13v-23c0-7.18 5.82-13 13-13h78v-94Z" fill="url(#cross)"/>
-    <path d="M245 113h22c7.18 0 13 5.82 13 13v94h78c7.18 0 13 5.82 13 13v23c0 7.18-5.82 13-13 13h-78v78c0 7.18-5.82 13-13 13h-22c-7.18 0-13-5.82-13-13v-78h-78c-7.18 0-13-5.82-13-13v-23c0-7.18 5.82-13 13-13h78v-94c0-7.18 5.82-13 13-13Z" fill="none" stroke="#ffffff" stroke-opacity="0.34" stroke-width="2"/>
-  </g>
+  <rect width="512" height="512" fill="#000104"/>
+  <rect x="47" y="47" width="418" height="418" rx="96" fill="url(#tileFill)" filter="url(#innerShadow)"/>
+  <rect x="47" y="47" width="418" height="418" rx="96" fill="none" stroke="url(#edge)" stroke-width="7" filter="url(#softEdge)"/>
+  <rect x="56" y="56" width="400" height="400" rx="88" fill="none" stroke="#e6fff8" stroke-opacity="0.2" stroke-width="2"/>
+  <circle cx="257" cy="261" r="151" fill="url(#halo)"/>
+  <path d="M236 101h63v118h118v61H299v55l111 65-65 41-90-55v83l-61 38V344L93 438l-44-58 145-135H72l-52-61h174V101h42Z" fill="#04141b" opacity="0.88" transform="translate(13 5)"/>
+  <path d="M236 101h63v118h118v61H299v55l111 65-65 41-90-55v83l-61 38V344L93 438l-44-58 145-135H72l-52-61h174V101h42Z" fill="url(#markFill)" filter="url(#markGlow)" transform="translate(13 5)"/>
+  <path d="M236 101h63v118h118v61H299v55l111 65-65 41-90-55v83l-61 38V344L93 438l-44-58 145-135H72l-52-61h174V101h42Z" fill="none" stroke="#f9fff2" stroke-opacity="0.75" stroke-width="5" stroke-linejoin="round" transform="translate(13 5)"/>
+  <path d="M251 116h33v118h118" fill="none" stroke="#ffffff" stroke-opacity="0.42" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" transform="translate(13 5)"/>
 </svg>
