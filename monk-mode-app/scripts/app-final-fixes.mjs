@@ -12,6 +12,15 @@ const replace = (before, after) => {
   source = source.replace(before, after);
 };
 
+const replaceAny = (befores, after, label) => {
+  if (source.includes(after)) return;
+  const before = befores.find((fragment) => source.includes(fragment));
+  if (!before) {
+    throw new Error(`[app-final-fixes] missing fragment set: ${label}`);
+  }
+  source = source.replace(before, after);
+};
+
 replace(
   `const EmptyState = ({ title, body, action, onAction }) => <GlassCard className="empty-state"><Sparkles className="h-7 w-7 text-cyan-200" /><h3>{title}</h3><p>{body}</p>{action ? <GradientButton onClick={onAction}>{action}</GradientButton> : null}</GlassCard>;`,
   `const EmptyState = ({ title, body, action, onAction }) => <GlassCard className="empty-state"><Sparkles className="empty-icon h-7 w-7 text-cyan-200" /><div><h3>{title}</h3><p>{body}</p></div>{action ? <GradientButton onClick={onAction}>{action}</GradientButton> : null}</GlassCard>;`
@@ -45,16 +54,21 @@ replace(
 }`
 );
 
-replace(
-  `  const stats = routineStats(state);
+replaceAny(
+  [
+    `  const stats = routineStats(state);
   const visibleItems = stats.items.slice(0, Math.min(stats.items.length, 5 + stats.done));
   const hiddenCount = Math.max(0, stats.items.length - visibleItems.length);
   return <GlassCard className="routine-card">`,
+    `  const stats = routineStats(state);
+  return <GlassCard className="routine-card">`,
+  ],
   `  const stats = routineStats(state);
   const remainingItems = stats.items.filter((item) => !stats.completed[item.id]);
   const visibleItems = remainingItems.slice(0, 5);
   const hiddenCount = Math.max(0, remainingItems.length - visibleItems.length);
-  return <GlassCard className="routine-card">`
+  return <GlassCard className="routine-card">`,
+  "routine visible item setup"
 );
 
 replace(
