@@ -1,0 +1,470 @@
+.today-screen {
+  gap: 16px;
+}
+
+.current-fast-card {
+  min-height: 150px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 8% 8%, rgba(65, 93, 180, .32), transparent 42%),
+    radial-gradient(circle at 100% 100%, rgba(25, 206, 255, .10), transparent 38%),
+    linear-gradient(135deg, rgba(37, 48, 91, .92), rgba(8, 15, 36, .86));
+  border-color: rgba(169, 185, 232, .22);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .12), 0 24px 76px rgba(0, 0, 0, .42);
+}
+
+.fast-left,
+.fast-right {
+  align-items: center;
+}
+
+.fast-right {
+  min-width: 0;
+}
+
+.timer-text {
+  letter-spacing: -.035em;
+}
+
+.progress-ring-wrap {
+  width: min(88vw, 370px);
+  margin-top: 14px;
+}
+
+.ring-track {
+  stroke: rgba(70, 101, 128, .22);
+}
+
+.ring-center {
+  box-shadow: inset 0 0 52px rgba(23, 214, 223, .08);
+}
+
+.next-action-card {
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 100% 12%, rgba(57, 245, 216, .16), transparent 34%),
+    linear-gradient(135deg, rgba(37, 48, 91, .9), rgba(10, 17, 39, .92));
+}
+
+.goals-redesign {
+  gap: 18px;
+}
+
+.goals-hero-card {
+  min-height: 392px;
+  padding: 28px 26px;
+  border-radius: 34px;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 88% 22%, rgba(183, 255, 58, .12), transparent 25%),
+    radial-gradient(circle at 0% 100%, rgba(20, 239, 232, .11), transparent 38%),
+    linear-gradient(140deg, rgba(36, 47, 89, .95), rgba(8, 16, 39, .92) 58%, rgba(11, 29, 55, .86));
+  border-color: rgba(173, 189, 232, .24);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .14), 0 26px 86px rgba(0, 0, 0, .46);
+}
+
+.goals-hero-copy {
+  max-width: 78%;
+}
+
+.goals-eyebrow {
+  display: inline-flex;
+  margin-bottom: 24px;
+  color: var(--cyan);
+  text-transform: uppercase;
+  letter-spacing: .32em;
+  font-size: .75rem;
+  font-weight: 950;
+  text-shadow: 0 0 18px rgba(47, 255, 226, .28);
+}
+
+.goals-hero-card h1 {
+  margin: 0;
+  color: white;
+  font-size: clamp(3rem, 14vw, 4.35rem);
+  line-height: .98;
+  letter-spacing: -.065em;
+}
+
+.goals-hero-card h1 span,
+.goals-hero-card h1 strong {
+  display: block;
+}
+
+.goals-hero-card h1 strong {
+  margin-top: 8px;
+  font-weight: 950;
+  background: linear-gradient(100deg, #27f5ef 0%, #40efc2 44%, #dfff48 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.goals-hero-card p {
+  max-width: 31ch;
+  margin: 24px 0;
+  color: #c8d4f1;
+  font-size: 1.08rem;
+  line-height: 1.48;
+}
+
+.goals-progress-line {
+  height: 9px;
+  max-width: 100%;
+  margin: 2px 0 28px;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, .12);
+  background: rgba(255, 255, 255, .055);
+  overflow: hidden;
+}
+
+.goals-progress-line span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, #20f4e8, #77f59f 62%, #eff543);
+  box-shadow: 0 0 22px rgba(42, 245, 226, .34);
+}
+
+.goals-hero-stats {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin-bottom: 30px;
+}
+
+.goals-hero-stats div {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 44px 1fr;
+  column-gap: 10px;
+  align-items: center;
+}
+
+.goals-hero-stats i {
+  grid-row: span 2;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: var(--cyan);
+  background: rgba(49, 244, 231, .08);
+  border: 1px solid rgba(255, 255, 255, .14);
+  box-shadow: inset 0 1px rgba(255, 255, 255, .1), 0 0 20px rgba(49, 244, 231, .12);
+}
+
+.goals-hero-stats i svg {
+  width: 20px;
+  height: 20px;
+}
+
+.goals-hero-stats strong {
+  min-width: 0;
+  color: white;
+  font-size: 1.35rem;
+  line-height: 1;
+}
+
+.goals-hero-stats span {
+  min-width: 0;
+  color: var(--soft);
+  font-size: .78rem;
+  line-height: 1.15;
+}
+
+.goals-primary-cta {
+  width: min(100%, 420px);
+  min-height: 68px;
+  justify-content: space-between;
+  padding: 0 24px 0 22px;
+  font-size: 1.18rem;
+  box-shadow: 0 0 42px rgba(48, 246, 223, .24), inset 0 1px rgba(255, 255, 255, .45);
+}
+
+.goals-primary-cta svg:first-child {
+  width: 34px;
+  height: 34px;
+  padding: 6px;
+  border-radius: 999px;
+  background: rgba(4, 17, 31, .22);
+}
+
+.goal-orbit {
+  position: absolute;
+  right: 22px;
+  top: 44px;
+  width: 150px;
+  height: 150px;
+  display: grid;
+  place-items: center;
+  color: #d8ff4f;
+  opacity: .95;
+}
+
+.goal-orbit span {
+  position: absolute;
+  border-radius: 999px;
+  border: 2px solid rgba(176, 255, 59, .34);
+}
+
+.goal-orbit span:nth-child(1) {
+  inset: 3px;
+  border-style: dotted;
+  opacity: .58;
+}
+
+.goal-orbit span:nth-child(2) {
+  inset: 31px;
+  box-shadow: 0 0 32px rgba(216, 255, 79, .12);
+}
+
+.goal-orbit span:nth-child(3) {
+  inset: 58px;
+  background: radial-gradient(circle, rgba(216, 255, 79, .34), transparent 64%);
+  box-shadow: 0 0 26px rgba(216, 255, 79, .35);
+}
+
+.goal-orbit svg {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 0 12px rgba(216, 255, 79, .55));
+}
+
+.goals-empty-card {
+  min-height: 238px;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  gap: 26px;
+  align-items: center;
+  padding: 30px 28px;
+  border-radius: 32px;
+  background:
+    radial-gradient(circle at 16% 50%, rgba(49, 244, 231, .16), transparent 30%),
+    linear-gradient(135deg, rgba(36, 47, 89, .88), rgba(10, 19, 45, .9));
+}
+
+.empty-orb {
+  position: relative;
+  width: 116px;
+  height: 116px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  color: #8effff;
+  background:
+    radial-gradient(circle at 35% 24%, rgba(255, 255, 255, .17), transparent 30%),
+    radial-gradient(circle, rgba(34, 244, 221, .2), rgba(7, 10, 25, .68));
+  border: 1px solid rgba(91, 255, 239, .28);
+  box-shadow: 0 0 34px rgba(49, 244, 231, .22), 0 22px 34px rgba(0, 0, 0, .34);
+}
+
+.empty-orb::after {
+  content: "";
+  position: absolute;
+  width: 150px;
+  height: 36px;
+  bottom: -26px;
+  border-radius: 999px;
+  background: radial-gradient(ellipse, rgba(49, 244, 231, .18), transparent 72%);
+}
+
+.empty-orb svg {
+  width: 56px;
+  height: 56px;
+  filter: drop-shadow(0 0 12px rgba(142, 255, 255, .42));
+}
+
+.goals-empty-card h3 {
+  margin: 0 0 14px;
+  color: white;
+  font-size: 1.42rem;
+  font-weight: 950;
+}
+
+.goals-empty-card p {
+  max-width: 31ch;
+  margin: 0 0 24px;
+  color: var(--soft);
+  font-size: 1.02rem;
+  line-height: 1.48;
+}
+
+.outlined-goal-button {
+  min-height: 58px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  width: min(100%, 360px);
+  border-radius: 999px;
+  padding: 0 20px;
+  color: #57fff0;
+  font-weight: 950;
+  background:
+    linear-gradient(#071125, #071125) padding-box,
+    linear-gradient(100deg, var(--cyan), var(--lime)) border-box;
+  border: 2px solid transparent;
+  box-shadow: 0 0 26px rgba(49, 244, 231, .12);
+}
+
+.outlined-goal-button svg {
+  width: 21px;
+  height: 21px;
+}
+
+.goals-chart-card {
+  border-radius: 32px;
+}
+
+@media (max-width: 430px) {
+  .current-fast-card {
+    grid-template-columns: minmax(0, 1fr) minmax(132px, .86fr);
+    gap: 14px;
+    padding: 18px 16px;
+  }
+
+  .fast-right {
+    border-left: 1px solid rgba(255, 255, 255, .1);
+    border-top: 0;
+    padding: 0 0 0 14px;
+  }
+
+  .tiny-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+  }
+
+  .timer-text {
+    font-size: clamp(1.55rem, 8vw, 2.15rem);
+  }
+
+  .fast-type {
+    font-size: clamp(1.02rem, 5.8vw, 1.35rem);
+  }
+
+  .progress-ring-wrap {
+    width: min(90vw, 360px);
+    margin-top: 18px;
+  }
+
+  .next-action-card {
+    grid-template-columns: 44px 1fr;
+    padding: 20px 18px;
+  }
+
+  .goals-hero-card {
+    min-height: 390px;
+    padding: 24px 22px;
+  }
+
+  .goals-hero-copy {
+    max-width: 100%;
+  }
+
+  .goals-hero-card h1 {
+    font-size: clamp(2.55rem, 13vw, 3.65rem);
+  }
+
+  .goals-hero-card p {
+    max-width: 23ch;
+    font-size: 1rem;
+  }
+
+  .goal-orbit {
+    right: 18px;
+    top: 44px;
+    width: 118px;
+    height: 118px;
+    opacity: .8;
+  }
+
+  .goal-orbit span:nth-child(2) {
+    inset: 24px;
+  }
+
+  .goal-orbit span:nth-child(3) {
+    inset: 45px;
+  }
+
+  .goal-orbit svg {
+    width: 34px;
+    height: 34px;
+  }
+
+  .goals-hero-stats {
+    gap: 8px;
+  }
+
+  .goals-hero-stats div {
+    grid-template-columns: 38px 1fr;
+    column-gap: 8px;
+  }
+
+  .goals-hero-stats i {
+    width: 38px;
+    height: 38px;
+  }
+
+  .goals-primary-cta {
+    min-height: 62px;
+    font-size: 1.05rem;
+  }
+
+  .goals-empty-card {
+    grid-template-columns: 94px 1fr;
+    gap: 18px;
+    padding: 24px 22px;
+  }
+
+  .empty-orb {
+    width: 86px;
+    height: 86px;
+  }
+
+  .empty-orb::after {
+    width: 110px;
+  }
+
+  .empty-orb svg {
+    width: 42px;
+    height: 42px;
+  }
+
+  .goals-empty-card h3 {
+    font-size: 1.24rem;
+  }
+
+  .goals-empty-card p {
+    font-size: .94rem;
+  }
+}
+
+@media (max-width: 370px) {
+  .current-fast-card {
+    grid-template-columns: 1fr;
+  }
+
+  .fast-right {
+    border-left: 0;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    padding: 12px 0 0;
+  }
+
+  .goals-hero-card {
+    min-height: 420px;
+  }
+
+  .goal-orbit {
+    opacity: .38;
+  }
+
+  .goals-hero-stats {
+    grid-template-columns: 1fr;
+  }
+
+  .goals-empty-card {
+    grid-template-columns: 1fr;
+  }
+}
