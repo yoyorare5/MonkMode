@@ -5,7 +5,8 @@ const root = process.cwd();
 const app = readFileSync(resolve(root, "src", "FastingModeApp.jsx"), "utf8");
 const css = [
   readFileSync(resolve(root, "src", "index.css"), "utf8"),
-  readFileSync(resolve(root, "src", "routine-goals.css"), "utf8")
+  readFileSync(resolve(root, "src", "routine-goals.css"), "utf8"),
+  readFileSync(resolve(root, "src", "goal-polish.css"), "utf8")
 ].join("\n");
 const pkg = readFileSync(resolve(root, "package.json"), "utf8");
 
@@ -54,7 +55,8 @@ const requiredApp = [
   "Daily Routine",
   "Goal Steps",
   "Level System",
-  "Set the target.",
+  "Set a goal.",
+  "Build your momentum.",
   "Proverbs 16:3"
 ];
 
@@ -71,6 +73,8 @@ const requiredCss = [
   ".heatmap",
   ".routine-card",
   ".level-card",
+  ".goals-hero-card",
+  ".goal-orbit",
   ".builder-shell",
   "@media (prefers-reduced-motion: reduce)"
 ];
