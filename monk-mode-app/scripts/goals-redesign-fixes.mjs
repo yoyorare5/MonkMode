@@ -6,6 +6,16 @@ let source = readFileSync(file, "utf8");
 const skipped = [];
 let applied = 0;
 
+const replace = (before, after, label = before.slice(0, 90)) => {
+  if (source.includes(after)) return;
+  if (!source.includes(before)) {
+    skipped.push(label);
+    return;
+  }
+  source = source.replace(before, after);
+  applied += 1;
+};
+
 const replaceFunction = (name, nextName, after) => {
   if (source.includes(after)) return;
   const start = source.indexOf(`function ${name}(`);
@@ -17,6 +27,44 @@ const replaceFunction = (name, nextName, after) => {
   source = `${source.slice(0, start)}${after}\n${source.slice(end)}`;
   applied += 1;
 };
+
+replaceFunction(
+  "GoalModal",
+  "GoalsScreen",
+  `function GoalModal({ onClose, onCreate }) {
+  const [draft, setDraft] = useState({ title: "", category: "Focus", targetValue: 21, currentValue: 0, unit: "sessions", deadline: addDays(todayKey(), 30), why: "", steps: "Daily execution block\\nMinimum version: 5 honest minutes" });
+  const [error, setError] = useState("");
+  const submit = (event) => {
+    event?.preventDefault?.();
+    const title = draft.title.trim();
+    if (!title) {
+      setError("Name the goal first.");
+      return;
+    }
+    setError("");
+    onCreate({ ...draft, title, targetValue: Math.max(1, Number(draft.targetValue) || 1), currentValue: Math.max(0, Number(draft.currentValue) || 0), category: draft.category.trim() || "Discipline", unit: draft.unit.trim() || "sessions", deadline: draft.deadline || addDays(todayKey(), 30) });
+    onClose();
+  };
+  return <motion.div className="modal-backdrop" role="presentation" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onMouseDown={(event) => { if (event.target === event.currentTarget) onClose(); }}><motion.form className="modal-card goal-modal-card" onSubmit={submit} initial={{ opacity: 0, y: 30, scale: 0.96 }} animate={{ opacity: 1, y: 0, scale: 1 }} exit={{ opacity: 0, y: 20, scale: 0.98 }}><button type="button" className="modal-close" onClick={onClose} aria-label="Close goal form"><X /></button><h2>Create Goal</h2><p>Set the target, deadline, and daily steps that reverse-engineer the outcome.</p>{error ? <div className="form-error" role="alert">{error}</div> : null}<div className="form-grid"><label><span>Goal title</span><input autoFocus placeholder="Example: finish 21 focus sessions" value={draft.title} onChange={(event) => setDraft({ ...draft, title: event.target.value })} /></label><label><span>Category</span><input placeholder="Focus, fitness, faith..." value={draft.category} onChange={(event) => setDraft({ ...draft, category: event.target.value })} /></label><label><span>Target amount</span><input type="number" min="1" inputMode="numeric" value={draft.targetValue} onChange={(event) => setDraft({ ...draft, targetValue: event.target.value })} /></label><label><span>Unit</span><input placeholder="sessions, pounds, pages..." value={draft.unit} onChange={(event) => setDraft({ ...draft, unit: event.target.value })} /></label><label><span>Deadline</span><input type="date" value={draft.deadline} onChange={(event) => setDraft({ ...draft, deadline: event.target.value })} /></label><label><span>Daily steps</span><textarea placeholder="One daily step per line" value={draft.steps} onChange={(event) => setDraft({ ...draft, steps: event.target.value })} /></label><label><span>Why this matters</span><textarea placeholder="Why does this matter before God?" value={draft.why} onChange={(event) => setDraft({ ...draft, why: event.target.value })} /></label></div><GradientButton className="goal-submit" type="submit">Create Goal<ArrowRight /></GradientButton></motion.form></motion.div>;
+}`,
+);
+
+replace(
+  `  const createGoal = (draft) => {
+    const steps = String(draft.steps || "").split("\\n").map((step) => step.trim()).filter(Boolean);
+    const linkedDailyActions = (steps.length ? steps : ["Daily execution block"]).slice(0, 8).map((step, index) => normalizeGoalAction({ title: step, minimumVersion: index === 0 ? "Minimum version: 5 honest minutes" : \`Smallest version of: \${step}\`, estimatedMinutes: index === 0 ? 25 : 15, difficulty: index === 0 ? "medium" : "easy" }));
+    const goal = normalizeGoal({ id: newId(), title: draft.title, category: draft.category, targetValue: draft.targetValue, currentValue: draft.currentValue, unit: draft.unit, deadline: draft.deadline, why: draft.why, status: "active", createdAt: todayKey(), linkedDailyActions, progressHistory: [{ dateKey: todayKey(), value: 0 }] });
+    persist({ ...stateRef.current, goals: { items: [goal, ...stateRef.current.goals.items] }, ui: { ...stateRef.current.ui, activeTab: "goals" } });
+  };`,
+  `  const createGoal = (draft) => {
+    const current = normalizeState(stateRef.current || {});
+    const steps = String(draft.steps || "").split("\\n").map((step) => step.trim()).filter(Boolean);
+    const linkedDailyActions = (steps.length ? steps : ["Daily execution block"]).slice(0, 8).map((step, index) => normalizeGoalAction({ title: step, minimumVersion: index === 0 ? "Minimum version: 5 honest minutes" : \`Smallest version of: \${step}\`, estimatedMinutes: index === 0 ? 25 : 15, difficulty: index === 0 ? "medium" : "easy" }));
+    const goal = normalizeGoal({ id: newId(), title: draft.title, category: draft.category, targetValue: draft.targetValue, currentValue: draft.currentValue, unit: draft.unit, deadline: draft.deadline, why: draft.why, status: "active", createdAt: todayKey(), linkedDailyActions, progressHistory: [{ dateKey: todayKey(), value: Math.max(0, Number(draft.currentValue) || 0) }] });
+    persist({ ...current, goals: { items: [goal, ...(current.goals?.items || [])] }, ui: { ...current.ui, activeTab: "goals" } });
+  };`,
+  "defensive goal creation"
+);
 
 replaceFunction(
   "GoalProgressChart",
