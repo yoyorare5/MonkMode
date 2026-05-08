@@ -1,0 +1,39 @@
+.modal-backdrop {
+  z-index: 100;
+  overflow-y: auto;
+  place-items: start center;
+  padding: max(16px, env(safe-area-inset-top)) 16px calc(128px + env(safe-area-inset-bottom));
+  background: rgba(0, 0, 0, .72);
+  backdrop-filter: blur(14px);
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+}
+
+.modal-card {
+  max-height: calc(100dvh - max(16px, env(safe-area-inset-top)) - 24px);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.form-grid label {
+  display: grid;
+  gap: 7px;
+}
+
+.form-grid label span {
+  color: var(--soft);
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: .68rem;
+  font-weight: 900;
+}
+
+.form-error {
+  border: 1px solid rgba(255, 92, 117, .35);
+  background: rgba(255, 92, 117, .12);
+  color: #ffd8df;
+  border-radius: 16px;
+  padding: 10px 12px;
+  margin-top: 12px;
+  font-weight: 800;
+}
